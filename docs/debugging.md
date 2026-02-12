@@ -46,7 +46,7 @@ client = CopilotClient({"log_level": "debug"})
 
 <!-- docs-validate: skip -->
 ```go
-import copilot "github.com/github/copilot-sdk/go"
+import copilot "github.com/jeremiahjordanisaacson/copilot-sdk-supercharged/go"
 
 client := copilot.NewClient(&copilot.ClientOptions{
     LogLevel: "debug",
@@ -487,7 +487,7 @@ If you're still stuck:
    - Debug logs
    - Minimal reproduction code
 
-2. **Search existing issues:** [GitHub Issues](https://github.com/github/copilot-sdk/issues)
+2. **Search existing issues:** [GitHub Issues](https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged/issues)
 
 3. **Open a new issue** with the collected information
 
@@ -496,4 +496,4 @@ If you're still stuck:
 - [Getting Started Guide](./getting-started.md)
 - [MCP Overview](./mcp/overview.md) - MCP configuration and setup
 - [MCP Debugging Guide](./mcp/debugging.md) - Detailed MCP troubleshooting
-- [API Reference](https://github.com/github/copilot-sdk)
+- [API Reference](https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged)

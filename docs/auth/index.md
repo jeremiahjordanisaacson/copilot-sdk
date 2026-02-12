@@ -52,7 +52,7 @@ await client.start()
 
 <!-- docs-validate: skip -->
 ```go
-import copilot "github.com/github/copilot-sdk/go"
+import copilot "github.com/jeremiahjordanisaacson/copilot-sdk-supercharged/go"
 
 // Default: uses logged-in user credentials
 client := copilot.NewClient(nil)
@@ -122,7 +122,7 @@ await client.start()
 
 <!-- docs-validate: skip -->
 ```go
-import copilot "github.com/github/copilot-sdk/go"
+import copilot "github.com/jeremiahjordanisaacson/copilot-sdk-supercharged/go"
 
 client := copilot.NewClient(&copilot.ClientOptions{
     GithubToken:     userAccessToken,   // Token from OAuth flow

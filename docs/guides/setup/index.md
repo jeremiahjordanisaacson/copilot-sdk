@@ -129,11 +129,12 @@ flowchart LR
 All guides assume you have:
 
 - **Copilot CLI** installed ([Installation guide](https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-cli))
-- **One of the SDKs** installed:
+- **One of the SDKs** installed (official SDKs):
   - Node.js: `npm install @github/copilot-sdk`
   - Python: `pip install github-copilot-sdk`
-  - Go: `go get github.com/github/copilot-sdk/go`
+  - Go: `go get github.com/jeremiahjordanisaacson/copilot-sdk-supercharged/go`
   - .NET: `dotnet add package GitHub.Copilot.SDK`
+  - See the [Getting Started tutorial](../../getting-started.md) for all 20 supported languages, including community SDKs for Java, Rust, Ruby, PHP, Swift, Kotlin, C++, and more.
 
 If you're brand new, start with the **[Getting Started tutorial](../../getting-started.md)** first, then come back here for production configuration.
 

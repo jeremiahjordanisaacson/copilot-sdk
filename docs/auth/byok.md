@@ -100,7 +100,7 @@ import (
     "context"
     "fmt"
     "os"
-    copilot "github.com/github/copilot-sdk/go"
+    copilot "github.com/jeremiahjordanisaacson/copilot-sdk-supercharged/go"
 )
 
 func main() {

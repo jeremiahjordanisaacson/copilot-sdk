@@ -2,7 +2,7 @@
 
 The Copilot SDK can integrate with **MCP servers** (Model Context Protocol) to extend the assistant's capabilities with external tools. MCP servers run as separate processes and expose tools (functions) that Copilot can invoke during conversations.
 
-> **Note:** This is an evolving feature. See [issue #36](https://github.com/github/copilot-sdk/issues/36) for ongoing discussion.
+> **Note:** This is an evolving feature. See [issue #36](https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged/issues/36) for ongoing discussion.
 
 ## What is MCP?
 
@@ -106,7 +106,7 @@ package main
 import (
     "context"
     "log"
-    copilot "github.com/github/copilot-sdk/go"
+    copilot "github.com/jeremiahjordanisaacson/copilot-sdk-supercharged/go"
 )
 
 func main() {
@@ -271,5 +271,5 @@ For detailed debugging guidance, see the **[MCP Debugging Guide](./debugging.md)
 ## See Also
 
 - [MCP Debugging Guide](./debugging.md) - Detailed MCP troubleshooting
-- [Issue #9](https://github.com/github/copilot-sdk/issues/9) - Original MCP tools usage question
-- [Issue #36](https://github.com/github/copilot-sdk/issues/36) - MCP documentation tracking issue
+- [Issue #9](https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged/issues/9) - Original MCP tools usage question
+- [Issue #36](https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged/issues/36) - MCP documentation tracking issue
