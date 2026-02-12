@@ -1,0 +1,24 @@
+Package: copilot.sdk
+Title: R SDK for GitHub Copilot CLI
+Version: 0.1.0
+Authors@R: c(
+    person("Microsoft Corporation", role = c("aut", "cph")),
+    person("GitHub", role = "aut")
+  )
+Description: R SDK for programmatic control of GitHub Copilot CLI via JSON-RPC 2.0
+    over stdio. Provides session management, tool registration, event handling,
+    and streaming support for building applications on top of GitHub Copilot.
+License: MIT + file LICENSE
+URL: https://github.com/github/copilot-sdk
+BugReports: https://github.com/github/copilot-sdk/issues
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
+Imports:
+    jsonlite (>= 1.8.0),
+    R6 (>= 2.5.0),
+    processx (>= 3.8.0),
+    uuid (>= 1.1-0)
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
