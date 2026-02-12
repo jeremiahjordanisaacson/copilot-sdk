@@ -3,14 +3,14 @@ requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "github-copilot-sdk"
-version = "0.1.0"
-description = "Python SDK for GitHub Copilot CLI"
+name = "copilot-sdk-supercharged"
+version = "1.0.0"
+description = "GitHub Copilot SDK Supercharged - Python SDK for programmatic control of GitHub Copilot CLI. Supports 21 languages."
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}
 authors = [
-    {name = "GitHub", email = "opensource@github.com"}
+    {name = "jeremiahjordanisaacson"}
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -29,8 +29,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/github/copilot-sdk"
-Repository = "https://github.com/github/copilot-sdk"
+Homepage = "https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged"
+Repository = "https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged"
 
 [tool.setuptools.packages.find]
 where = ["."]
