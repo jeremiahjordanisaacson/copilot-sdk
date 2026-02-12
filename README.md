@@ -7,6 +7,7 @@
 [![crates.io](https://img.shields.io/crates/v/copilot-sdk-supercharged?logo=rust&label=crates.io&color=dea584)](https://crates.io/crates/copilot-sdk-supercharged)
 [![Gem](https://img.shields.io/gem/v/copilot-sdk-supercharged?logo=rubygems&label=RubyGems&color=E9573F)](https://rubygems.org/gems/copilot-sdk-supercharged)
 [![Hex](https://img.shields.io/hexpm/v/copilot_sdk_supercharged?logo=elixir&label=Hex&color=6e4a7e)](https://hex.pm/packages/copilot_sdk_supercharged)
+[![LuaRocks](https://img.shields.io/badge/LuaRocks-1.0.6-2C2D72?logo=lua)](https://luarocks.org/modules/jeremiahjordanisaacson/copilot-sdk-supercharged)
 [![GitHub Stars](https://img.shields.io/github/stars/jeremiahjordanisaacson/copilot-sdk-supercharged?style=flat&logo=github&color=238636)](https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged)
 [![Languages](https://img.shields.io/badge/languages-21-58a6ff?style=flat)](https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged#available-sdks)
 
@@ -19,7 +20,7 @@ Embed Copilot's agentic workflows in your application. A production-tested agent
 | SDK | Location | Installation | Build System |
 |-----|----------|-------------|--------------|
 | **Node.js / TypeScript** | [`nodejs/`](./nodejs/README.md) | `npm install copilot-sdk-supercharged` | npm |
-| **Python** | [`python/`](./python/README.md) | `pip install github-copilot-sdk` | pip |
+| **Python** | [`python/`](./python/README.md) | `pip install copilot-sdk-supercharged` | pip |
 | **Go** | [`go/`](./go/README.md) | `go get github.com/github/copilot-sdk/go` | Go modules |
 | **.NET / C#** | [`dotnet/`](./dotnet/README.md) | `dotnet add package GitHub.Copilot.SDK` | NuGet |
 | **Java** | [`java/`](./java/README.md) | Maven / Gradle | Maven |
@@ -34,7 +35,7 @@ Embed Copilot's agentic workflows in your application. A production-tested agent
 | **Scala** | [`scala/`](./scala/README.md) | sbt | sbt |
 | **R** | [`r/`](./r/README.md) | CRAN | CRAN |
 | **Perl** | [`perl/`](./perl/README.md) | CPAN | CPAN |
-| **Lua** | [`lua/`](./lua/README.md) | LuaRocks | LuaRocks |
+| **Lua** | [`lua/`](./lua/README.md) | `luarocks install copilot-sdk-supercharged` | LuaRocks |
 | **Shell / Bash** | [`shell/`](./shell/README.md) | Source | N/A |
 | **Elixir** | [`elixir/`](./elixir/README.md) | `{:copilot_sdk_supercharged, "~> 1.0"}` | Hex |
 | **Haskell** | [`haskell/`](./haskell/README.md) | Cabal | Cabal |
@@ -126,10 +127,11 @@ Please use the [GitHub Issues](https://github.com/jeremiahjordanisaacson/copilot
 
 ## Quick Links
 
-- **[Getting Started](./docs/getting-started.md)** – Tutorial to get up and running
-- **[Authentication](./docs/auth/index.md)** – GitHub OAuth, BYOK, and more
-- **[Cookbook](https://github.com/github/awesome-copilot/blob/main/cookbook/copilot-sdk)** – Practical recipes for common tasks across all languages
-- **[More Resources](https://github.com/github/awesome-copilot/blob/main/collections/copilot-sdk.md)** – Additional examples, tutorials, and community resources
+- **[Getting Started](./docs/getting-started.md)** - Tutorial to get up and running
+- **[Authentication](./docs/auth/index.md)** - GitHub OAuth, BYOK, and more
+- **[Architecture](./MULTI_LANGUAGE_SDKS.md)** - How all 21 SDKs work under the hood
+- **[Contributing](./CONTRIBUTING.md)** - How to contribute (new languages welcome!)
+- **[Website](https://jeremiahjordanisaacson.github.io/copilot-sdk-supercharged/)** - Landing page with examples in every language
 
 
 ## Contributing
