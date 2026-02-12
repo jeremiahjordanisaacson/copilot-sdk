@@ -91,12 +91,12 @@ main = do
   unsubscribe <- onSessionEvent session $ \evt -> do
     case seType evt of
       "assistant.message" -> do
-        let mContent = Aeson.parseMaybe (\o -> (o :: Aeson.Object) Aeson..: "content") (seData evt) :: Maybe Text
+        let mContent = Aeson.parseMaybe (Aeson.withObject "" $ \o -> o Aeson..: "content") (seData evt) :: Maybe Text
         case mContent of
           Just content -> TIO.putStrLn $ "\n[Assistant] " <> content
           Nothing      -> pure ()
       "tool.execution_start" -> do
-        let mToolName = Aeson.parseMaybe (\o -> (o :: Aeson.Object) Aeson..: "toolName") (seData evt) :: Maybe Text
+        let mToolName = Aeson.parseMaybe (Aeson.withObject "" $ \o -> o Aeson..: "toolName") (seData evt) :: Maybe Text
         case mToolName of
           Just tn -> TIO.putStrLn $ "[Tool] Executing: " <> tn
           Nothing -> pure ()
@@ -119,7 +119,7 @@ main = do
 
   case mResponse of
     Just evt -> do
-      let mContent = Aeson.parseMaybe (\o -> (o :: Aeson.Object) Aeson..: "content") (seData evt) :: Maybe Text
+      let mContent = Aeson.parseMaybe (Aeson.withObject "" $ \o -> o Aeson..: "content") (seData evt) :: Maybe Text
       TIO.putStrLn $ "\nFinal response: " <> maybe "(no content)" id mContent
     Nothing ->
       TIO.putStrLn "\nNo assistant message received."

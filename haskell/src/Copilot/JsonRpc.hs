@@ -45,7 +45,7 @@ import           Control.Exception         (SomeException, catch, try, evaluate)
 import           Control.Monad             (forever, void, when)
 import qualified Data.Aeson                as Aeson
 import           Data.Aeson                (Value (..), object, (.=), (.:), (.:?))
-import           Data.Aeson.Types          (parseMaybe)
+import           Data.Aeson.Types          (Parser, parseMaybe)
 import qualified Data.ByteString           as BS
 import qualified Data.ByteString.Char8     as BS8
 import qualified Data.ByteString.Lazy      as LBS
@@ -265,8 +265,8 @@ dispatchMessage client body =
   case Aeson.decodeStrict body of
     Nothing -> pure ()  -- Ignore unparsable messages
     Just val -> do
-      let mMethod = parseMaybe (\o -> (o :: Aeson.Object) .: "method") val :: Maybe Text
-          mId     = parseMaybe (\o -> (o :: Aeson.Object) .:? "id") val :: Maybe (Maybe Value)
+      let mMethod = parseMaybe (Aeson.withObject "" $ \o -> o .: "method") val :: Maybe Text
+          mId     = parseMaybe (Aeson.withObject "" $ \o -> o .:? "id") val :: Maybe (Maybe Value)
           hasId   = case mId of
                       Just (Just _) -> True
                       _             -> False
@@ -282,7 +282,7 @@ dispatchMessage client body =
 -- | Handle a response to a pending request.
 handleResponse :: JsonRpcClient -> Value -> IO ()
 handleResponse client val = do
-  let mIdText = parseMaybe (\o -> (o :: Aeson.Object) .: "id") val :: Maybe Text
+  let mIdText = parseMaybe (Aeson.withObject "" $ \o -> o .: "id") val :: Maybe Text
   case mIdText of
     Nothing -> pure ()
     Just reqId -> do
@@ -293,7 +293,7 @@ handleResponse client val = do
         Nothing -> pure ()
         Just tmvar -> do
           let mError = parseMaybe parseError val
-              mResult = parseMaybe (\o -> (o :: Aeson.Object) .: "result") val
+              mResult = parseMaybe (Aeson.withObject "" $ \o -> o .: "result") val
           let response = case mError of
                 Just err -> Left err
                 Nothing  -> case mResult of
@@ -314,8 +314,8 @@ handleResponse client val = do
 -- | Handle an incoming request from the server (has both method and id).
 handleServerRequest :: JsonRpcClient -> Text -> Value -> IO ()
 handleServerRequest client method val = void $ forkIO $ do
-  let mId     = parseMaybe (\o -> (o :: Aeson.Object) .: "id") val :: Maybe Value
-      mParams = case parseMaybe (\o -> (o :: Aeson.Object) .: "params") val :: Maybe Value of
+  let mId     = parseMaybe (Aeson.withObject "" $ \o -> o .: "id") val :: Maybe Value
+      mParams = case parseMaybe (Aeson.withObject "" $ \o -> o .: "params") val :: Maybe Value of
                   Just p  -> p
                   Nothing -> Null
   handlers <- atomically $ readTVar (jrcRequestHandlers client)
@@ -336,7 +336,7 @@ handleServerRequest client method val = void $ forkIO $ do
 -- | Handle an incoming notification from the server (has method, no id).
 handleServerNotification :: JsonRpcClient -> Text -> Value -> IO ()
 handleServerNotification client method val = do
-  let mParams = case parseMaybe (\o -> (o :: Aeson.Object) .: "params") val :: Maybe Value of
+  let mParams = case parseMaybe (Aeson.withObject "" $ \o -> o .: "params") val :: Maybe Value of
                   Just p  -> p
                   Nothing -> Null
   handlers <- atomically $ readTVar (jrcRequestHandlers client)

@@ -44,11 +44,10 @@ module Copilot.Session
   , getMessages
   ) where
 
-import           Control.Concurrent        (MVar, newMVar, modifyMVar_, readMVar, newEmptyMVar, putMVar, takeMVar, tryPutMVar, tryTakeMVar)
-import           Control.Concurrent.STM
+import           Control.Concurrent        (MVar, newEmptyMVar, putMVar, takeMVar, tryPutMVar, tryTakeMVar)
 import           Control.Exception         (SomeException, catch, try, throwIO, Exception)
-import           Control.Monad             (forM_, when)
-import           Data.Aeson                (Value (..), object, (.=), (.:), (.:?))
+import           Control.Monad             (forM_, void, when)
+import           Data.Aeson                (Value (..), object, (.=), (.:), (.:?), withObject)
 import qualified Data.Aeson                as Aeson
 import           Data.Aeson.Types          (parseMaybe)
 import           Data.IORef
@@ -134,7 +133,7 @@ send session opts = do
   case result of
     Left err -> throwIO $ SessionRpcError (jreMessage err)
     Right val -> do
-      let mMsgId = parseMaybe (\o -> (o :: Aeson.Object) .: "messageId") val :: Maybe Text
+      let mMsgId = parseMaybe (withObject "" $ \o -> o .: "messageId") val :: Maybe Text
       case mMsgId of
         Just mid -> pure mid
         Nothing  -> throwIO $ SessionRpcError "No messageId in send response"
@@ -159,8 +158,8 @@ sendAndWait session opts mTimeout = do
           "assistant.message" -> writeIORef lastMsgRef (Just evt)
           "session.idle"      -> void $ tryPutMVar idleMVar ()
           "session.error"     -> do
-            let mMsg = parseMaybe (\o -> (o :: Aeson.Object) .: "message") (seData evt) :: Maybe Text
-                mStack = parseMaybe (\o -> (o :: Aeson.Object) .:? "stack") (seData evt) :: Maybe (Maybe Text)
+            let mMsg = parseMaybe (withObject "" $ \o -> o .: "message") (seData evt) :: Maybe Text
+                mStack = parseMaybe (withObject "" $ \o -> o .:? "stack") (seData evt) :: Maybe (Maybe Text)
             void $ tryPutMVar errorMVar (SessionErrorEvent (maybe "session error" id mMsg) (maybe Nothing id mStack))
           _ -> pure ()
 
@@ -210,12 +209,13 @@ sendAndWait session opts mTimeout = do
 -- Returns an IO action that unsubscribes when called.
 onSessionEvent :: CopilotSession -> SessionEventHandler -> IO (IO ())
 onSessionEvent session handler = do
-  -- We use a unique reference to identify the handler for removal
-  ref <- newIORef handler
-  modifyIORef (csEventHandlers session) (handler :)
-  pure $ modifyIORef (csEventHandlers session) (drop 1)
-  -- Note: This simple approach removes from the head. A production implementation
-  -- would use unique IDs. For the SDK pattern, this suffices for typical usage.
+  -- Use an IORef as a unique "alive" flag for this subscription
+  aliveRef <- newIORef True
+  let wrappedHandler evt = do
+        alive <- readIORef aliveRef
+        when alive $ handler evt
+  modifyIORef (csEventHandlers session) (wrappedHandler :)
+  pure $ writeIORef aliveRef False
 
 -- | Dispatch an event to all registered handlers. (Internal)
 dispatchSessionEvent :: CopilotSession -> SessionEvent -> IO ()
@@ -260,7 +260,7 @@ handleSessionPermissionRequest session reqVal sid = do
         Aeson.Success permReq -> handler permReq sid
         Aeson.Error _ ->
           -- Try to at least get the kind
-          let mKind = parseMaybe (\o -> (o :: Aeson.Object) .: "kind") reqVal :: Maybe Text
+          let mKind = parseMaybe (withObject "" $ \o -> o .: "kind") reqVal :: Maybe Text
           in case mKind of
             Just kind -> handler (PermissionRequest kind Nothing Map.empty) sid
             Nothing   -> pure $ PermissionRequestResult "denied-no-approval-rule-and-could-not-request-from-user" Nothing
@@ -391,6 +391,6 @@ getMessages session = do
   case result of
     Left err -> throwIO $ SessionRpcError (jreMessage err)
     Right val -> do
-      let mEvents = parseMaybe (\o -> (o :: Aeson.Object) .: "events") val :: Maybe [SessionEvent]
+      let mEvents = parseMaybe (withObject "" $ \o -> o .: "events") val :: Maybe [SessionEvent]
       pure $ maybe [] id mEvents
 

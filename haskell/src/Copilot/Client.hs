@@ -36,21 +36,20 @@ module Copilot.Client
   , onLifecycleEvent
   ) where
 
-import           Control.Concurrent        (MVar, newMVar, modifyMVar_, readMVar, withMVar, newEmptyMVar, putMVar)
-import           Control.Concurrent.STM
-import           Control.Exception         (SomeException, catch, try, bracket, throwIO, Exception)
-import           Control.Monad             (when, unless, void, forM_)
-import           Data.Aeson                (Value (..), object, (.=), (.:), (.:?))
+import           Control.Concurrent        (MVar, newMVar, modifyMVar_, readMVar)
+import           Control.Exception         (SomeException, catch, try, throwIO, Exception)
+import           Control.Monad             (when, void, forM_)
+import           Data.Aeson                (Value (..), object, (.=), (.:), (.:?), withObject)
 import qualified Data.Aeson                as Aeson
 import           Data.Aeson.Types          (parseMaybe)
 import           Data.IORef
 import qualified Data.Map.Strict           as Map
 import           Data.Text                 (Text)
 import qualified Data.Text                 as T
-import           System.IO                 (hClose, hSetBinaryMode)
+import           System.Exit               (ExitCode)
 import           System.Process            (CreateProcess (..), StdStream (..), ProcessHandle,
                                             createProcess, proc, terminateProcess,
-                                            waitForProcess, getProcessExitCode)
+                                            waitForProcess)
 
 import           Copilot.JsonRpc           (JsonRpcClient, JsonRpcError (..),
                                             newJsonRpcClient, startClient, stopClient,
@@ -244,7 +243,9 @@ stopClient client = do
       case result of
         Left (e :: SomeException) ->
           modifyIORef errors (("Failed to kill CLI process: " <> T.pack (show e)) :)
-        Right () -> void $ try $ waitForProcess ph :: IO (Either SomeException _)
+        Right () -> do
+          _ <- try (waitForProcess ph) :: IO (Either SomeException ExitCode)
+          pure ()
     Nothing -> pure ()
   writeIORef (ccProcess client) Nothing
 
@@ -312,8 +313,8 @@ createSession client config = do
   case result of
     Left err -> throwIO $ ServerError (jreMessage err)
     Right val -> do
-      let mSessionId = parseMaybe (\o -> (o :: Aeson.Object) .: "sessionId") val :: Maybe Text
-          mWorkspacePath = parseMaybe (\o -> (o :: Aeson.Object) .:? "workspacePath") val :: Maybe (Maybe Text)
+      let mSessionId = parseMaybe (withObject "" $ \o -> o .: "sessionId") val :: Maybe Text
+          mWorkspacePath = parseMaybe (withObject "" $ \o -> o .:? "workspacePath") val :: Maybe (Maybe Text)
       case mSessionId of
         Nothing -> throwIO $ ServerError "No sessionId in create response"
         Just sid -> do
@@ -370,8 +371,8 @@ resumeSession client sessionId config = do
   case result of
     Left err -> throwIO $ ServerError (jreMessage err)
     Right val -> do
-      let mSid = parseMaybe (\o -> (o :: Aeson.Object) .: "sessionId") val :: Maybe Text
-          mWsp = parseMaybe (\o -> (o :: Aeson.Object) .:? "workspacePath") val :: Maybe (Maybe Text)
+      let mSid = parseMaybe (withObject "" $ \o -> o .: "sessionId") val :: Maybe Text
+          mWsp = parseMaybe (withObject "" $ \o -> o .:? "workspacePath") val :: Maybe (Maybe Text)
       case mSid of
         Nothing -> throwIO $ ServerError "No sessionId in resume response"
         Just sid -> do
@@ -400,8 +401,8 @@ deleteSession client sessionId = do
   case result of
     Left err -> throwIO $ ServerError (jreMessage err)
     Right val -> do
-      let mSuccess = parseMaybe (\o -> (o :: Aeson.Object) .: "success") val :: Maybe Bool
-          mError = parseMaybe (\o -> (o :: Aeson.Object) .:? "error") val :: Maybe (Maybe Text)
+      let mSuccess = parseMaybe (withObject "" $ \o -> o .: "success") val :: Maybe Bool
+          mError = parseMaybe (withObject "" $ \o -> o .:? "error") val :: Maybe (Maybe Text)
       case mSuccess of
         Just True -> do
           modifyMVar_ (ccSessions client) $ \m -> pure (Map.delete sessionId m)
@@ -419,7 +420,7 @@ listSessions client = do
   case result of
     Left err -> throwIO $ ServerError (jreMessage err)
     Right val -> do
-      let mSessions = parseMaybe (\o -> (o :: Aeson.Object) .: "sessions") val :: Maybe [SessionMetadata]
+      let mSessions = parseMaybe (withObject "" $ \o -> o .: "sessions") val :: Maybe [SessionMetadata]
       case mSessions of
         Nothing -> pure []
         Just ss -> pure ss
@@ -431,7 +432,7 @@ getLastSessionId client = do
   result <- sendRequest rpc "session.getLastId" (object [])
   case result of
     Left _ -> pure Nothing
-    Right val -> pure $ parseMaybe (\o -> (o :: Aeson.Object) .: "sessionId") val
+    Right val -> pure $ parseMaybe (withObject "" $ \o -> o .: "sessionId") val
 
 -- ============================================================================
 -- Queries
@@ -483,7 +484,7 @@ listModels client = do
         case result of
           Left err -> throwIO $ ServerError (jreMessage err)
           Right val -> do
-            let mModels = parseMaybe (\o -> (o :: Aeson.Object) .: "models") val :: Maybe [ModelInfo]
+            let mModels = parseMaybe (withObject "" $ \o -> o .: "models") val :: Maybe [ModelInfo]
             case mModels of
               Just models -> pure (Just models)
               Nothing     -> pure (Just [])
@@ -492,14 +493,19 @@ listModels client = do
 
 -- | Subscribe to session lifecycle events.
 -- Returns an unsubscribe action.
+--
+-- Note: Haskell functions cannot be compared by equality. The returned
+-- unsubscribe action removes the handler by dropping the head of the list
+-- that was prepended. For robust unsubscription, only call unsubscribe once.
 onLifecycleEvent :: CopilotClient -> SessionLifecycleHandler -> IO (IO ())
 onLifecycleEvent client handler = do
-  modifyIORef (ccLifecycleHandlers client) (handler :)
-  pure $ modifyIORef (ccLifecycleHandlers client) (filter (/= handler))
-  -- Note: Haskell functions are not comparable by Eq, so we use a simple
-  -- approach of keeping all handlers. In practice, the above filter will
-  -- not work correctly for function equality. A more robust approach
-  -- would use a unique key, but this matches the pattern of other SDKs.
+  -- Use an IORef as a unique "alive" flag for this subscription
+  aliveRef <- newIORef True
+  let wrappedHandler evt = do
+        alive <- readIORef aliveRef
+        when alive $ handler evt
+  modifyIORef (ccLifecycleHandlers client) (wrappedHandler :)
+  pure $ writeIORef aliveRef False
 
 -- ============================================================================
 -- Internal
@@ -584,8 +590,8 @@ setupHandlers client rpc = do
 -- | Dispatch a session.event notification to the appropriate session.
 handleSessionEventNotification :: CopilotClient -> Value -> IO ()
 handleSessionEventNotification client params = do
-  let mSessionId = parseMaybe (\o -> (o :: Aeson.Object) .: "sessionId") params :: Maybe Text
-      mEvent     = parseMaybe (\o -> (o :: Aeson.Object) .: "event") params :: Maybe SessionEvent
+  let mSessionId = parseMaybe (withObject "" $ \o -> o .: "sessionId") params :: Maybe Text
+      mEvent     = parseMaybe (withObject "" $ \o -> o .: "event") params :: Maybe SessionEvent
   case (mSessionId, mEvent) of
     (Just sid, Just evt) -> do
       sessions <- readMVar (ccSessions client)
@@ -649,8 +655,8 @@ handleToolCallReq client params = do
 -- | Handle a permission.request from the server.
 handlePermissionReq :: CopilotClient -> Value -> IO (Either JsonRpcError Value)
 handlePermissionReq client params = do
-  let mSessionId = parseMaybe (\o -> (o :: Aeson.Object) .: "sessionId") params :: Maybe Text
-      mPermReq   = parseMaybe (\o -> (o :: Aeson.Object) .: "permissionRequest") params
+  let mSessionId = parseMaybe (withObject "" $ \o -> o .: "sessionId") params :: Maybe Text
+      mPermReq   = parseMaybe (withObject "" $ \o -> o .: "permissionRequest") params
   case (mSessionId, mPermReq) of
     (Just sid, Just permReq) -> do
       sessions <- readMVar (ccSessions client)
@@ -668,10 +674,10 @@ handlePermissionReq client params = do
 -- | Handle a userInput.request from the server.
 handleUserInputReq :: CopilotClient -> Value -> IO (Either JsonRpcError Value)
 handleUserInputReq client params = do
-  let mSessionId = parseMaybe (\o -> (o :: Aeson.Object) .: "sessionId") params :: Maybe Text
-      mQuestion  = parseMaybe (\o -> (o :: Aeson.Object) .: "question") params :: Maybe Text
-      mChoices   = parseMaybe (\o -> (o :: Aeson.Object) .:? "choices") params :: Maybe (Maybe [Text])
-      mAllow     = parseMaybe (\o -> (o :: Aeson.Object) .:? "allowFreeform") params :: Maybe (Maybe Bool)
+  let mSessionId = parseMaybe (withObject "" $ \o -> o .: "sessionId") params :: Maybe Text
+      mQuestion  = parseMaybe (withObject "" $ \o -> o .: "question") params :: Maybe Text
+      mChoices   = parseMaybe (withObject "" $ \o -> o .:? "choices") params :: Maybe (Maybe [Text])
+      mAllow     = parseMaybe (withObject "" $ \o -> o .:? "allowFreeform") params :: Maybe (Maybe Bool)
   case (mSessionId, mQuestion) of
     (Just sid, Just question) -> do
       sessions <- readMVar (ccSessions client)
@@ -693,9 +699,9 @@ handleUserInputReq client params = do
 -- | Handle a hooks.invoke from the server.
 handleHooksInvokeReq :: CopilotClient -> Value -> IO (Either JsonRpcError Value)
 handleHooksInvokeReq client params = do
-  let mSessionId = parseMaybe (\o -> (o :: Aeson.Object) .: "sessionId") params :: Maybe Text
-      mHookType  = parseMaybe (\o -> (o :: Aeson.Object) .: "hookType") params :: Maybe Text
-      mInput     = parseMaybe (\o -> (o :: Aeson.Object) .: "input") params :: Maybe Value
+  let mSessionId = parseMaybe (withObject "" $ \o -> o .: "sessionId") params :: Maybe Text
+      mHookType  = parseMaybe (withObject "" $ \o -> o .: "hookType") params :: Maybe Text
+      mInput     = parseMaybe (withObject "" $ \o -> o .: "input") params :: Maybe Value
   case (mSessionId, mHookType) of
     (Just sid, Just hookType) -> do
       sessions <- readMVar (ccSessions client)

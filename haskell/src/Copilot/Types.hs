@@ -3,6 +3,7 @@
 ---------------------------------------------------------------------------------------------
 
 {-# LANGUAGE DeriveGeneric     #-}
+{-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards   #-}
 
@@ -98,7 +99,7 @@ module Copilot.Types
   ) where
 
 import           Data.Aeson
-import           Data.Aeson.Types  (Parser)
+import qualified Data.Aeson        as Aeson
 import qualified Data.Map.Strict   as Map
 import           Data.Text         (Text)
 import           GHC.Generics      (Generic)
@@ -586,12 +587,7 @@ instance ToJSON PermissionRequest where
     let base = Map.insert "kind" (toJSON prKind)
              $ maybe id (\tc -> Map.insert "toolCallId" (toJSON tc)) prToolCallId
              $ prExtra
-    in  Object $ fromMapToObject base
-    where
-      fromMapToObject :: Map.Map Text Value -> Object
-      fromMapToObject m = case fromJSON (toJSON m) of
-        Data.Aeson.Success o -> o
-        Data.Aeson.Error _   -> mempty
+    in  toJSON base
 
 -- | Result of a permission request.
 data PermissionRequestResult = PermissionRequestResult
