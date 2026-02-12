@@ -2,6 +2,8 @@
 
 In this tutorial, you'll use the Copilot SDK to build a command-line assistant. You'll start with the basics, add streaming responses, then add custom tools - giving Copilot the ability to call your code.
 
+The Copilot SDK Supercharged supports **20 languages**. This guide covers the 4 official SDKs in detail, with links to the 16 community SDKs for other languages.
+
 **What you'll build:**
 
 ```
@@ -20,7 +22,8 @@ Before you begin, make sure you have:
 
 - **GitHub Copilot CLI** installed and authenticated ([Installation guide](https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-cli))
 - Your preferred language runtime:
-  - **Node.js** 18+ or **Python** 3.8+ or **Go** 1.21+ or **.NET** 8.0+
+  - **Official SDKs:** Node.js 18+ / Python 3.8+ / Go 1.21+ / .NET 8.0+
+  - **Community SDKs:** Java 17+ / Rust / Ruby 3.1+ / PHP 8.1+ / Swift 5.9+ / Kotlin 1.9+ / C++17 / C11 / Dart 3.0+ / Scala 3.4+ / R 4.0+ / Perl 5.32+ / Lua 5.1+ / Bash 4+ / Elixir 1.15+ / Haskell (GHC 9.4+) / Clojure 1.12+
 
 Verify the CLI is working:
 
@@ -89,6 +92,104 @@ Then add the SDK:
 ```bash
 dotnet add package GitHub.Copilot.SDK
 ```
+
+</details>
+
+<details>
+<summary><strong>Java</strong></summary>
+
+Add the dependency to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>com.github.copilot.supercharged</groupId>
+    <artifactId>copilot-sdk-supercharged</artifactId>
+    <version>0.1.0</version>
+</dependency>
+```
+
+Or clone the SDK directory from this repo into your project.
+
+</details>
+
+<details>
+<summary><strong>Rust</strong></summary>
+
+Add to your `Cargo.toml`:
+
+```toml
+[dependencies]
+copilot-sdk-supercharged = { path = "../rust" }
+```
+
+Or reference the SDK directory from this repo.
+
+</details>
+
+<details>
+<summary><strong>Ruby</strong></summary>
+
+```bash
+gem install copilot-sdk-supercharged
+```
+
+Or add to your `Gemfile`:
+
+```ruby
+gem 'copilot-sdk-supercharged', path: '../ruby'
+```
+
+</details>
+
+<details>
+<summary><strong>PHP</strong></summary>
+
+```bash
+composer require github/copilot-sdk-supercharged
+```
+
+</details>
+
+<details>
+<summary><strong>Swift</strong></summary>
+
+Add to your `Package.swift`:
+
+```swift
+.package(path: "../swift")
+```
+
+</details>
+
+<details>
+<summary><strong>Kotlin</strong></summary>
+
+Add the SDK as a local dependency in `build.gradle.kts`:
+
+```kotlin
+implementation(project(":copilot-sdk-supercharged-kotlin"))
+```
+
+</details>
+
+<details>
+<summary><strong>Other Languages</strong></summary>
+
+See the individual SDK READMEs for installation instructions:
+
+| Language | README |
+|----------|--------|
+| C++ | [`cpp/README.md`](../cpp/README.md) |
+| C | [`c/README.md`](../c/README.md) |
+| Dart | [`dart/README.md`](../dart/README.md) |
+| Scala | [`scala/README.md`](../scala/README.md) |
+| R | [`r/README.md`](../r/README.md) |
+| Perl | [`perl/README.md`](../perl/README.md) |
+| Lua | [`lua/README.md`](../lua/README.md) |
+| Shell/Bash | [`shell/README.md`](../shell/README.md) |
+| Elixir | [`elixir/README.md`](../elixir/README.md) |
+| Haskell | [`haskell/README.md`](../haskell/README.md) |
+| Clojure | [`clojure/README.md`](../clojure/README.md) |
 
 </details>
 
@@ -1272,22 +1373,32 @@ await using var session = await client.CreateSessionAsync();
 
 ## Learn More
 
-- [Authentication Guide](./auth/index.md) - GitHub OAuth, environment variables, and BYOK
-- [BYOK (Bring Your Own Key)](./auth/byok.md) - Use your own API keys from Azure AI Foundry, OpenAI, etc.
+### Official SDK References
 - [Node.js SDK Reference](../nodejs/README.md)
 - [Python SDK Reference](../python/README.md)
 - [Go SDK Reference](../go/README.md)
 - [.NET SDK Reference](../dotnet/README.md)
+
+### Community SDK References (Supercharged)
+- [Java SDK](../java/README.md) | [Rust SDK](../rust/README.md) | [Ruby SDK](../ruby/README.md) | [PHP SDK](../php/README.md)
+- [Swift SDK](../swift/README.md) | [Kotlin SDK](../kotlin/README.md) | [C++ SDK](../cpp/README.md) | [C SDK](../c/README.md)
+- [Dart SDK](../dart/README.md) | [Scala SDK](../scala/README.md) | [R SDK](../r/README.md) | [Perl SDK](../perl/README.md)
+- [Lua SDK](../lua/README.md) | [Shell/Bash SDK](../shell/README.md) | [Elixir SDK](../elixir/README.md) | [Haskell SDK](../haskell/README.md) | [Clojure SDK](../clojure/README.md)
+
+### Guides
+- [Authentication Guide](./auth/index.md) - GitHub OAuth, environment variables, and BYOK
+- [BYOK (Bring Your Own Key)](./auth/byok.md) - Use your own API keys from Azure AI Foundry, OpenAI, etc.
 - [Using MCP Servers](./mcp) - Integrate external tools via Model Context Protocol
 - [GitHub MCP Server Documentation](https://github.com/github/github-mcp-server)
 - [MCP Servers Directory](https://github.com/modelcontextprotocol/servers) - Explore more MCP servers
+- [Multi-Language SDK Documentation](../MULTI_LANGUAGE_SDKS.md) - Architecture and protocol details
 
 ---
 
 **You did it!** You've learned the core concepts of the GitHub Copilot SDK:
-- ✅ Creating a client and session
-- ✅ Sending messages and receiving responses
-- ✅ Streaming for real-time output
-- ✅ Defining custom tools that Copilot can call
+- Creating a client and session
+- Sending messages and receiving responses
+- Streaming for real-time output
+- Defining custom tools that Copilot can call
 
-Now go build something amazing! 🚀
+Now go build something amazing in any of our **20 supported languages**!
