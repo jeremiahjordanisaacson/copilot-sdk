@@ -110,6 +110,8 @@ export class CopilotSession {
             prompt: options.prompt,
             attachments: options.attachments,
             mode: options.mode,
+            responseFormat: options.responseFormat,
+            imageOptions: options.imageOptions,
         });
 
         return (response as { messageId: string }).messageId;

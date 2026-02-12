@@ -98,6 +98,10 @@ class CopilotSession {
       'prompt': options.prompt,
       if (options.attachments != null) 'attachments': options.attachments,
       if (options.mode != null) 'mode': options.mode,
+      if (options.responseFormat != null)
+        'responseFormat': options.responseFormat!.toJson(),
+      if (options.imageOptions != null)
+        'imageOptions': options.imageOptions!.toJson(),
     }) as Map<String, dynamic>;
 
     return response['messageId'] as String;

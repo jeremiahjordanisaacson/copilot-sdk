@@ -4,6 +4,11 @@ package GitHub::Copilot::Types;
 use strict;
 use warnings;
 
+# Response format constants
+use constant RESPONSE_FORMAT_TEXT        => 'text';
+use constant RESPONSE_FORMAT_IMAGE       => 'image';
+use constant RESPONSE_FORMAT_JSON_OBJECT => 'json_object';
+
 =head1 NAME
 
 GitHub::Copilot::Types - Type definitions for the GitHub Copilot Perl SDK
@@ -320,20 +325,120 @@ sub TO_JSON {
 }
 
 # ============================================================================
+# ImageOptions - configuration for image generation
+# ============================================================================
+package GitHub::Copilot::Types::ImageOptions;
+use Moo;
+
+has size    => (is => 'ro', default => sub { undef });
+has quality => (is => 'ro', default => sub { undef });
+has style   => (is => 'ro', default => sub { undef });
+
+sub from_hashref {
+    my ($class, $hr) = @_;
+    return $class->new(
+        size    => $hr->{size},
+        quality => $hr->{quality},
+        style   => $hr->{style},
+    );
+}
+
+sub TO_JSON {
+    my ($self) = @_;
+    my %h;
+    $h{size}    = $self->size    if defined $self->size;
+    $h{quality} = $self->quality if defined $self->quality;
+    $h{style}   = $self->style   if defined $self->style;
+    return \%h;
+}
+
+# ============================================================================
+# AssistantImageData - image data returned by the assistant
+# ============================================================================
+package GitHub::Copilot::Types::AssistantImageData;
+use Moo;
+
+has format        => (is => 'ro', default => sub { undef });
+has base64        => (is => 'ro', default => sub { undef });
+has url           => (is => 'ro', default => sub { undef });
+has revisedPrompt => (is => 'ro', default => sub { undef });
+has width         => (is => 'ro', default => sub { undef });
+has height        => (is => 'ro', default => sub { undef });
+
+sub from_hashref {
+    my ($class, $hr) = @_;
+    return $class->new(
+        format        => $hr->{format},
+        base64        => $hr->{base64},
+        url           => $hr->{url},
+        revisedPrompt => $hr->{revisedPrompt},
+        width         => $hr->{width},
+        height        => $hr->{height},
+    );
+}
+
+sub TO_JSON {
+    my ($self) = @_;
+    my %h;
+    $h{format}        = $self->format        if defined $self->format;
+    $h{base64}        = $self->base64        if defined $self->base64;
+    $h{url}           = $self->url           if defined $self->url;
+    $h{revisedPrompt} = $self->revisedPrompt if defined $self->revisedPrompt;
+    $h{width}         = $self->width         if defined $self->width;
+    $h{height}        = $self->height        if defined $self->height;
+    return \%h;
+}
+
+# ============================================================================
+# ContentBlock - a block of content (text or image) in an assistant response
+# ============================================================================
+package GitHub::Copilot::Types::ContentBlock;
+use Moo;
+
+has type  => (is => 'ro', required => 1);
+has text  => (is => 'ro', default => sub { undef });
+has image => (is => 'ro', default => sub { undef });
+
+sub from_hashref {
+    my ($class, $hr) = @_;
+    my $image;
+    if (defined $hr->{image}) {
+        $image = GitHub::Copilot::Types::AssistantImageData->from_hashref($hr->{image});
+    }
+    return $class->new(
+        type  => $hr->{type} // 'text',
+        text  => $hr->{text},
+        image => $image,
+    );
+}
+
+sub TO_JSON {
+    my ($self) = @_;
+    my %h = (type => $self->type);
+    $h{text}  = $self->text  if defined $self->text;
+    $h{image} = $self->image if defined $self->image;
+    return \%h;
+}
+
+# ============================================================================
 # MessageOptions
 # ============================================================================
 package GitHub::Copilot::Types::MessageOptions;
 use Moo;
 
-has prompt      => (is => 'ro', required => 1);
-has attachments => (is => 'ro', default => sub { undef });
-has mode        => (is => 'ro', default => sub { undef });
+has prompt          => (is => 'ro', required => 1);
+has attachments     => (is => 'ro', default => sub { undef });
+has mode            => (is => 'ro', default => sub { undef });
+has response_format => (is => 'ro', default => sub { undef });
+has image_options   => (is => 'ro', default => sub { undef });
 
 sub TO_JSON {
     my ($self) = @_;
     my %h = (prompt => $self->prompt);
-    $h{attachments} = $self->attachments if defined $self->attachments;
-    $h{mode}        = $self->mode        if defined $self->mode;
+    $h{attachments}    = $self->attachments     if defined $self->attachments;
+    $h{mode}           = $self->mode            if defined $self->mode;
+    $h{responseFormat} = $self->response_format if defined $self->response_format;
+    $h{imageOptions}   = $self->image_options   if defined $self->image_options;
     return \%h;
 }
 

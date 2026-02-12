@@ -39,6 +39,12 @@ module Copilot.Types
   , ResumeSessionConfig (..)
   , defaultResumeSessionConfig
 
+    -- * Response format & image types
+  , ResponseFormat (..)
+  , ImageOptions (..)
+  , AssistantImageData (..)
+  , ContentBlock (..)
+
     -- * Message options
   , Attachment (..)
   , MessageOptions (..)
@@ -99,9 +105,12 @@ module Copilot.Types
   ) where
 
 import           Data.Aeson
+import           Data.Aeson.Types  (Parser)
 import qualified Data.Aeson        as Aeson
 import qualified Data.Map.Strict   as Map
+import           Data.Maybe        (catMaybes)
 import           Data.Text         (Text)
+import qualified Data.Text         as T
 import           GHC.Generics      (Generic)
 
 -- ============================================================================
@@ -520,6 +529,93 @@ defaultResumeSessionConfig = ResumeSessionConfig
   }
 
 -- ============================================================================
+-- Response Format & Image Types
+-- ============================================================================
+
+-- | Response format for message responses.
+data ResponseFormat = ResponseFormatText | ResponseFormatImage | ResponseFormatJsonObject
+  deriving (Show, Eq)
+
+instance ToJSON ResponseFormat where
+  toJSON ResponseFormatText       = String "text"
+  toJSON ResponseFormatImage      = String "image"
+  toJSON ResponseFormatJsonObject = String "json_object"
+
+instance FromJSON ResponseFormat where
+  parseJSON = withText "ResponseFormat" $ \case
+    "text"        -> pure ResponseFormatText
+    "image"       -> pure ResponseFormatImage
+    "json_object" -> pure ResponseFormatJsonObject
+    other         -> fail $ "Unknown response format: " <> T.unpack other
+
+-- | Options for image generation.
+data ImageOptions = ImageOptions
+  { imageOptionsSize    :: Maybe Text
+  , imageOptionsQuality :: Maybe Text
+  , imageOptionsStyle   :: Maybe Text
+  } deriving (Show, Eq)
+
+instance ToJSON ImageOptions where
+  toJSON ImageOptions{..} = object $ catMaybes
+    [ ("size" .=) <$> imageOptionsSize
+    , ("quality" .=) <$> imageOptionsQuality
+    , ("style" .=) <$> imageOptionsStyle
+    ]
+
+instance FromJSON ImageOptions where
+  parseJSON = withObject "ImageOptions" $ \o -> ImageOptions
+    <$> o .:? "size"
+    <*> o .:? "quality"
+    <*> o .:? "style"
+
+-- | Image data from an assistant image response.
+data AssistantImageData = AssistantImageData
+  { assistantImageFormat        :: Text
+  , assistantImageBase64        :: Text
+  , assistantImageUrl           :: Maybe Text
+  , assistantImageRevisedPrompt :: Maybe Text
+  , assistantImageWidth         :: Int
+  , assistantImageHeight        :: Int
+  } deriving (Show, Eq)
+
+instance ToJSON AssistantImageData where
+  toJSON AssistantImageData{..} = object
+    [ "format"        .= assistantImageFormat
+    , "base64"        .= assistantImageBase64
+    , "url"           .= assistantImageUrl
+    , "revisedPrompt" .= assistantImageRevisedPrompt
+    , "width"         .= assistantImageWidth
+    , "height"        .= assistantImageHeight
+    ]
+
+instance FromJSON AssistantImageData where
+  parseJSON = withObject "AssistantImageData" $ \o -> AssistantImageData
+    <$> o .: "format"
+    <*> o .: "base64"
+    <*> o .:? "url"
+    <*> o .:? "revisedPrompt"
+    <*> o .: "width"
+    <*> o .: "height"
+
+-- | A content block in a mixed text+image response.
+data ContentBlock
+  = TextBlock Text
+  | ImageBlock AssistantImageData
+  deriving (Show, Eq)
+
+instance ToJSON ContentBlock where
+  toJSON (TextBlock t)  = object ["type" .= ("text" :: Text), "text" .= t]
+  toJSON (ImageBlock i) = object ["type" .= ("image" :: Text), "image" .= i]
+
+instance FromJSON ContentBlock where
+  parseJSON = withObject "ContentBlock" $ \o -> do
+    typ <- o .: "type" :: Parser Text
+    case typ of
+      "text"  -> TextBlock <$> o .: "text"
+      "image" -> ImageBlock <$> o .: "image"
+      _       -> fail $ "Unknown content block type: " <> T.unpack typ
+
+-- ============================================================================
 -- Message Options & Attachments
 -- ============================================================================
 
@@ -555,9 +651,11 @@ instance FromJSON Attachment where
 
 -- | Options for sending a message to a session.
 data MessageOptions = MessageOptions
-  { moPrompt      :: !Text
-  , moAttachments :: !(Maybe [Attachment])
-  , moMode        :: !(Maybe Text)  -- ^ "enqueue" or "immediate"
+  { moPrompt         :: !Text
+  , moAttachments    :: !(Maybe [Attachment])
+  , moMode           :: !(Maybe Text)  -- ^ "enqueue" or "immediate"
+  , moResponseFormat :: !(Maybe ResponseFormat)
+  , moImageOptions   :: !(Maybe ImageOptions)
   } deriving (Show, Eq, Generic)
 
 -- ============================================================================

@@ -239,6 +239,8 @@ defmodule Copilot.Session do
 
     params = if options.attachments, do: Map.put(params, "attachments", options.attachments), else: params
     params = if options.mode, do: Map.put(params, "mode", options.mode), else: params
+    params = if options.response_format, do: Map.put(params, "responseFormat", Types.response_format_to_string(options.response_format)), else: params
+    params = if options.image_options, do: Map.put(params, "imageOptions", options.image_options), else: params
 
     case JsonRpcClient.request(state.rpc, "session.send", params, 30_000) do
       {:ok, %{"messageId" => mid}} -> {:reply, {:ok, mid}, state}
@@ -271,6 +273,8 @@ defmodule Copilot.Session do
 
     params = if options.attachments, do: Map.put(params, "attachments", options.attachments), else: params
     params = if options.mode, do: Map.put(params, "mode", options.mode), else: params
+    params = if options.response_format, do: Map.put(params, "responseFormat", Types.response_format_to_string(options.response_format)), else: params
+    params = if options.image_options, do: Map.put(params, "imageOptions", options.image_options), else: params
 
     case JsonRpcClient.request(state.rpc, "session.send", params, 30_000) do
       {:ok, _} ->

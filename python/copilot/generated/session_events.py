@@ -954,6 +954,9 @@ class SessionEventType(Enum):
     TOOL_EXECUTION_START = "tool.execution_start"
     TOOL_USER_REQUESTED = "tool.user_requested"
     USER_MESSAGE = "user.message"
+    ASSISTANT_IMAGE = "assistant.image"
+    ASSISTANT_IMAGE_DELTA = "assistant.image_delta"
+    ASSISTANT_CONTENT = "assistant.content"
     # UNKNOWN is used for forward compatibility - new event types from the server
     # will map to this value instead of raising an error
     UNKNOWN = "unknown"
@@ -995,6 +998,42 @@ class SessionEvent:
             result["ephemeral"] = from_union([from_bool, from_none], self.ephemeral)
         result["parentId"] = from_union([from_none, lambda x: str(x)], self.parent_id)
         return result
+
+
+@dataclass
+class AssistantImageEvent:
+    """Image response from the assistant"""
+
+    id: str
+    timestamp: str
+    type: str  # "assistant.image"
+    data: dict  # Contains messageId, image (format, base64, url, revisedPrompt, width, height)
+    parentId: Optional[str] = None
+    ephemeral: bool = False
+
+
+@dataclass
+class AssistantImageDeltaEvent:
+    """Streaming image chunk from the assistant"""
+
+    id: str
+    timestamp: str
+    type: str  # "assistant.image_delta"
+    data: dict  # Contains messageId, deltaBase64, chunkIndex, totalChunks
+    parentId: Optional[str] = None
+    ephemeral: bool = True
+
+
+@dataclass
+class AssistantContentEvent:
+    """Mixed text+image content response from the assistant"""
+
+    id: str
+    timestamp: str
+    type: str  # "assistant.content"
+    data: dict  # Contains messageId, content (array of text/image blocks)
+    parentId: Optional[str] = None
+    ephemeral: bool = False
 
 
 def session_event_from_dict(s: Any) -> SessionEvent:

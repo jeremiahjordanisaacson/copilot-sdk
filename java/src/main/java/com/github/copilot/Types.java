@@ -290,6 +290,48 @@ public final class Types {
         void handle(SessionEvent event);
     }
 
+    /** Response format for message responses. */
+    public enum ResponseFormat {
+        @JsonProperty("text") TEXT,
+        @JsonProperty("image") IMAGE,
+        @JsonProperty("json_object") JSON_OBJECT
+    }
+
+    /** Options for image generation. */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class ImageOptions {
+        @JsonProperty("size") public String size;
+        @JsonProperty("quality") public String quality;
+        @JsonProperty("style") public String style;
+
+        public ImageOptions() {}
+
+        public ImageOptions(String size, String quality, String style) {
+            this.size = size;
+            this.quality = quality;
+            this.style = style;
+        }
+    }
+
+    /** Image data from an assistant image response. */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class AssistantImageData {
+        @JsonProperty("format") public String format;
+        @JsonProperty("base64") public String base64;
+        @JsonProperty("url") public String url;
+        @JsonProperty("revisedPrompt") public String revisedPrompt;
+        @JsonProperty("width") public int width;
+        @JsonProperty("height") public int height;
+    }
+
+    /** A content block in a mixed text+image response. */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class ContentBlock {
+        @JsonProperty("type") public String type;
+        @JsonProperty("text") public String text;
+        @JsonProperty("image") public AssistantImageData image;
+    }
+
     /** Error encountered during stop(). */
     public static class StopError {
         public String message;

@@ -133,7 +133,7 @@ impl Drop for Subscription {
 ///
 /// // Send a message and wait for completion
 /// let response = session.send_and_wait(
-///     MessageOptions { prompt: "Hello!".into(), attachments: None, mode: None },
+///     MessageOptions { prompt: "Hello!".into(), attachments: None, mode: None, response_format: None, image_options: None },
 ///     None,
 /// ).await?;
 ///
@@ -212,6 +212,8 @@ impl CopilotSession {
             "prompt": options.prompt,
             "attachments": options.attachments,
             "mode": options.mode,
+            "responseFormat": options.response_format,
+            "imageOptions": options.image_options,
         });
 
         let response = self.rpc_client.request("session.send", params, None).await?;

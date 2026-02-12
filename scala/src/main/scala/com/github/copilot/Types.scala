@@ -785,6 +785,68 @@ object SessionLifecycleEvent:
 type SessionLifecycleHandler = SessionLifecycleEvent => Unit
 
 // ============================================================================
+// Response Format & Image Types
+// ============================================================================
+
+/** Response format for message responses. */
+object ResponseFormat:
+  val Text: String = "text"
+  val Image: String = "image"
+  val JsonObject: String = "json_object"
+
+/** Options for image generation. */
+case class ImageOptions(
+  size: Option[String] = None,
+  quality: Option[String] = None,
+  style: Option[String] = None
+)
+
+object ImageOptions:
+  given Encoder[ImageOptions] = deriveEncoder
+  given Decoder[ImageOptions] = deriveDecoder
+
+/** Image data from an assistant image response. */
+case class AssistantImageData(
+  format: String,
+  base64: String,
+  url: Option[String] = None,
+  revisedPrompt: Option[String] = None,
+  width: Int,
+  height: Int
+)
+
+object AssistantImageData:
+  given Encoder[AssistantImageData] = deriveEncoder
+  given Decoder[AssistantImageData] = deriveDecoder
+
+/** A content block in a mixed text+image response. */
+sealed trait ContentBlock
+
+case class TextBlock(text: String) extends ContentBlock
+
+object TextBlock:
+  given Encoder[TextBlock] = deriveEncoder
+  given Decoder[TextBlock] = deriveDecoder
+
+case class ImageBlock(image: AssistantImageData) extends ContentBlock
+
+object ImageBlock:
+  given Encoder[ImageBlock] = deriveEncoder
+  given Decoder[ImageBlock] = deriveDecoder
+
+object ContentBlock:
+  given Encoder[ContentBlock] = Encoder.instance:
+    case tb: TextBlock  => tb.asJson(using TextBlock.given_Encoder_TextBlock).deepMerge(Json.obj("type" -> "text".asJson))
+    case ib: ImageBlock => ib.asJson(using ImageBlock.given_Encoder_ImageBlock).deepMerge(Json.obj("type" -> "image".asJson))
+
+  given Decoder[ContentBlock] = Decoder.instance { c =>
+    c.get[String]("type").flatMap:
+      case "text"  => c.as[TextBlock]
+      case "image" => c.as[ImageBlock]
+      case other   => Left(DecodingFailure(s"Unknown content block type: $other", c.history))
+  }
+
+// ============================================================================
 // Message Options
 // ============================================================================
 
@@ -875,7 +937,9 @@ object Attachment:
 case class MessageOptions(
   prompt: String,
   attachments: Option[List[Attachment]] = None,
-  mode: Option[String] = None
+  mode: Option[String] = None,
+  responseFormat: Option[String] = None,
+  imageOptions: Option[ImageOptions] = None
 )
 
 // ============================================================================

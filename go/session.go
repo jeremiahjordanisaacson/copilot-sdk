@@ -107,10 +107,12 @@ func newSession(sessionID string, client *jsonrpc2.Client, workspacePath string)
 //	}
 func (s *Session) Send(ctx context.Context, options MessageOptions) (string, error) {
 	req := sessionSendRequest{
-		SessionID:   s.SessionID,
-		Prompt:      options.Prompt,
-		Attachments: options.Attachments,
-		Mode:        options.Mode,
+		SessionID:      s.SessionID,
+		Prompt:         options.Prompt,
+		Attachments:    options.Attachments,
+		Mode:           options.Mode,
+		ResponseFormat: options.ResponseFormat,
+		ImageOptions:   options.ImageOptions,
 	}
 
 	result, err := s.client.Request("session.send", req)

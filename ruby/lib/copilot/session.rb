@@ -57,14 +57,18 @@ module Copilot
 
     # Send a message to this session.
     #
-    # @param prompt      [String]       the message text
-    # @param attachments [Array, nil]   optional file/directory/selection attachments
-    # @param mode        [String, nil]  "enqueue" (default) or "immediate"
+    # @param prompt          [String]            the message text
+    # @param attachments     [Array, nil]        optional file/directory/selection attachments
+    # @param mode            [String, nil]       "enqueue" (default) or "immediate"
+    # @param response_format [String, nil]       desired response format ("text", "image", "json_object")
+    # @param image_options   [ImageOptions, nil] options for image generation
     # @return [String] the message ID
-    def send(prompt:, attachments: nil, mode: nil)
+    def send(prompt:, attachments: nil, mode: nil, response_format: nil, image_options: nil)
       payload = { sessionId: @session_id, prompt: prompt }
       payload[:attachments] = attachments if attachments
       payload[:mode] = mode if mode
+      payload[:responseFormat] = response_format if response_format
+      payload[:imageOptions] = image_options.to_h if image_options
       response = @rpc_client.request("session.send", payload)
       response["messageId"]
     end
@@ -74,14 +78,16 @@ module Copilot
     # This is a convenience method that combines {#send} with waiting for
     # the +session.idle+ event.
     #
-    # @param prompt      [String]       the message text
-    # @param attachments [Array, nil]   optional attachments
-    # @param mode        [String, nil]  delivery mode
-    # @param timeout     [Numeric]      seconds to wait (default 60)
+    # @param prompt          [String]            the message text
+    # @param attachments     [Array, nil]        optional attachments
+    # @param mode            [String, nil]       delivery mode
+    # @param response_format [String, nil]       desired response format ("text", "image", "json_object")
+    # @param image_options   [ImageOptions, nil] options for image generation
+    # @param timeout         [Numeric]           seconds to wait (default 60)
     # @return [SessionEvent, nil] the final assistant.message event, or nil
     # @raise [Timeout::Error] if the timeout expires before session.idle
     # @raise [RuntimeError] if the session emits a session.error event
-    def send_and_wait(prompt:, attachments: nil, mode: nil, timeout: 60)
+    def send_and_wait(prompt:, attachments: nil, mode: nil, response_format: nil, image_options: nil, timeout: 60)
       idle_mutex = Mutex.new
       idle_cv    = ConditionVariable.new
       idle_fired = false
@@ -111,7 +117,8 @@ module Copilot
       end
 
       begin
-        self.send(prompt: prompt, attachments: attachments, mode: mode)
+        self.send(prompt: prompt, attachments: attachments, mode: mode,
+                  response_format: response_format, image_options: image_options)
 
         idle_mutex.synchronize do
           unless idle_fired

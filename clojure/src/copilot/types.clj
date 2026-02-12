@@ -283,6 +283,48 @@
    :metadata   (:metadata m)})
 
 ;; ============================================================================
+;; Response format & image generation
+;; ============================================================================
+
+(def response-formats #{:text :image :json-object})
+
+(defn response-format->str
+  "Convert a response format keyword to its JSON string representation."
+  [fmt]
+  (case fmt
+    :text "text"
+    :image "image"
+    :json-object "json_object"
+    (name fmt)))
+
+(defn image-options
+  "Create image options map for image generation.
+   Options: :size (e.g. \"1024x1024\"), :quality (\"hd\" or \"standard\"), :style (\"natural\" or \"vivid\")"
+  [& {:keys [size quality style]}]
+  (cond-> {}
+    size    (assoc :size size)
+    quality (assoc :quality quality)
+    style   (assoc :style style)))
+
+(defn parse-assistant-image-data
+  "Parse assistant image data from a response map."
+  [data]
+  {:format         (:format data)
+   :base64         (:base64 data)
+   :url            (:url data)
+   :revised-prompt (:revisedPrompt data)
+   :width          (:width data)
+   :height         (:height data)})
+
+(defn parse-content-block
+  "Parse a content block from a mixed text+image response."
+  [block]
+  (case (:type block)
+    "text"  {:type :text :text (:text block)}
+    "image" {:type :image :image (parse-assistant-image-data (:image block))}
+    block))
+
+;; ============================================================================
 ;; Message options
 ;; ============================================================================
 
@@ -290,11 +332,14 @@
   "Construct message options for sending a message.
 
   `prompt` - the message string
-  Optional: :attachments (vector of attachment maps), :mode (:enqueue or :immediate)"
+  Optional: :attachments (vector of attachment maps), :mode (:enqueue or :immediate),
+            :response-format (keyword from response-formats), :image-options (image options map)"
   [prompt & {:as opts}]
   (cond-> {:prompt prompt}
-    (:attachments opts) (assoc :attachments (:attachments opts))
-    (:mode opts)        (assoc :mode (name (:mode opts)))))
+    (:attachments opts)    (assoc :attachments (:attachments opts))
+    (:mode opts)           (assoc :mode (name (:mode opts)))
+    (:response-format opts) (assoc :response-format (response-format->str (:response-format opts)))
+    (:image-options opts)  (assoc :image-options (:image-options opts))))
 
 ;; ============================================================================
 ;; Session hooks

@@ -219,14 +219,16 @@ function M.ResumeSessionConfig(fields)
 end
 
 --- Create a MessageOptions table.
--- @param fields table with keys: prompt, attachments, mode
+-- @param fields table with keys: prompt, attachments, mode, responseFormat, imageOptions
 -- @return table MessageOptions
 function M.MessageOptions(fields)
     fields = fields or {}
     return {
-        prompt      = fields.prompt or "",
-        attachments = fields.attachments,   -- optional array
-        mode        = fields.mode,          -- optional string
+        prompt         = fields.prompt or "",
+        attachments    = fields.attachments,      -- optional array
+        mode           = fields.mode,             -- optional string
+        responseFormat = fields.responseFormat,    -- optional string (ResponseFormat constant)
+        imageOptions   = fields.imageOptions,     -- optional table (from image_options())
     }
 end
 
@@ -463,6 +465,56 @@ function M.Attachment(fields)
         selection   = fields.selection,
         text        = fields.text,
     }
+end
+
+-- ---------------------------------------------------------------------------
+-- Response format constants
+-- ---------------------------------------------------------------------------
+
+M.ResponseFormat = {
+    TEXT        = "text",
+    IMAGE       = "image",
+    JSON_OBJECT = "json_object",
+}
+
+-- ---------------------------------------------------------------------------
+-- Image generation helpers
+-- ---------------------------------------------------------------------------
+
+--- Create image options for image generation.
+-- @param opts table with optional fields: size, quality, style
+-- @return table image options
+function M.image_options(opts)
+    opts = opts or {}
+    return {
+        size    = opts.size,
+        quality = opts.quality,
+        style   = opts.style,
+    }
+end
+
+--- Parse assistant image data from a response.
+-- @param data table with format, base64, url, revisedPrompt, width, height
+-- @return table parsed image data
+function M.parse_assistant_image_data(data)
+    return {
+        format        = data.format,
+        base64        = data.base64,
+        url           = data.url,
+        revisedPrompt = data.revisedPrompt,
+        width         = data.width,
+        height        = data.height,
+    }
+end
+
+--- Parse a content block from a mixed response.
+-- @param block table with type and content fields
+-- @return table parsed content block
+function M.parse_content_block(block)
+    if block.type == "image" and block.image then
+        block.image = M.parse_assistant_image_data(block.image)
+    end
+    return block
 end
 
 return M

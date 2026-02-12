@@ -564,6 +564,52 @@ class ResumeSessionConfig(TypedDict, total=False):
     disable_resume: bool
 
 
+# Response format for message responses
+ResponseFormat = Literal["text", "image", "json_object"]
+
+
+# Options for image generation
+class ImageOptions(TypedDict, total=False):
+    """Options for image generation"""
+
+    size: str  # Image size (e.g. "1024x1024")
+    quality: str  # Image quality ("hd" or "standard")
+    style: str  # Image style ("natural" or "vivid")
+
+
+# Image data from an assistant image response
+@dataclass
+class AssistantImageData:
+    """Image data from an assistant image response"""
+
+    format: str  # Image format ("png", "jpeg", "webp")
+    base64: str  # Base64-encoded image bytes
+    width: int  # Image width in pixels
+    height: int  # Image height in pixels
+    url: str | None = None  # Optional temporary URL
+    revisedPrompt: str | None = None  # The prompt the model actually used
+
+
+# A content block in a mixed text+image response
+@dataclass
+class TextBlock:
+    """A text content block"""
+
+    type: Literal["text"]
+    text: str
+
+
+@dataclass
+class ImageBlock:
+    """An image content block"""
+
+    type: Literal["image"]
+    image: AssistantImageData
+
+
+ContentBlock = TextBlock | ImageBlock
+
+
 # Options for sending a message to a session
 class MessageOptions(TypedDict):
     """Options for sending a message to a session"""
@@ -573,6 +619,8 @@ class MessageOptions(TypedDict):
     attachments: NotRequired[list[Attachment]]
     # Message processing mode
     mode: NotRequired[Literal["enqueue", "immediate"]]
+    response_format: NotRequired[ResponseFormat]  # Desired response format
+    image_options: NotRequired[ImageOptions]  # Options for image generation
 
 
 # Event handler type

@@ -575,4 +575,62 @@ export type SessionEvent =
           };
         };
       };
+    }
+  | {
+      id: string;
+      timestamp: string;
+      parentId: string | null;
+      ephemeral?: boolean;
+      type: "assistant.image";
+      data: {
+        messageId: string;
+        image: {
+          format: string;
+          base64: string;
+          url?: string;
+          revisedPrompt?: string;
+          width: number;
+          height: number;
+        };
+        parentToolCallId?: string;
+      };
+    }
+  | {
+      id: string;
+      timestamp: string;
+      parentId: string | null;
+      ephemeral: true;
+      type: "assistant.image_delta";
+      data: {
+        messageId: string;
+        deltaBase64: string;
+        chunkIndex: number;
+        totalChunks?: number;
+        parentToolCallId?: string;
+      };
+    }
+  | {
+      id: string;
+      timestamp: string;
+      parentId: string | null;
+      ephemeral?: boolean;
+      type: "assistant.content";
+      data: {
+        messageId: string;
+        content: Array<
+          | { type: "text"; text: string }
+          | {
+              type: "image";
+              image: {
+                format: string;
+                base64: string;
+                url?: string;
+                revisedPrompt?: string;
+                width: number;
+                height: number;
+              };
+            }
+        >;
+        parentToolCallId?: string;
+      };
     };

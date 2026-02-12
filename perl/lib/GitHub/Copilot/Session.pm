@@ -60,21 +60,29 @@ sub send {
     my $prompt = ref($options) && blessed($options) ? $options->prompt : $options->{prompt};
     my $attachments;
     my $mode;
+    my $response_format;
+    my $image_options;
 
     if (ref($options) && blessed($options)) {
-        $attachments = $options->attachments;
-        $mode        = $options->mode;
+        $attachments     = $options->attachments;
+        $mode            = $options->mode;
+        $response_format = $options->response_format if $options->can('response_format');
+        $image_options   = $options->image_options   if $options->can('image_options');
     } else {
-        $attachments = $options->{attachments};
-        $mode        = $options->{mode};
+        $attachments     = $options->{attachments};
+        $mode            = $options->{mode};
+        $response_format = $options->{response_format};
+        $image_options   = $options->{image_options};
     }
 
     my %payload = (
         sessionId => $self->{session_id},
         prompt    => $prompt,
     );
-    $payload{attachments} = $attachments if defined $attachments;
-    $payload{mode}        = $mode        if defined $mode;
+    $payload{attachments}    = $attachments     if defined $attachments;
+    $payload{mode}           = $mode            if defined $mode;
+    $payload{responseFormat} = $response_format if defined $response_format;
+    $payload{imageOptions}   = $image_options   if defined $image_options;
 
     my $response = $self->{_client}->request('session.send', \%payload);
     return $response->{messageId};

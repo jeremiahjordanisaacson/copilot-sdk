@@ -72,6 +72,16 @@ public actor CopilotSession {
         if let mode = options.mode {
             params["mode"] = mode
         }
+        if let responseFormat = options.responseFormat {
+            params["responseFormat"] = responseFormat.rawValue
+        }
+        if let imageOptions = options.imageOptions {
+            var imageDict: [String: Any] = [:]
+            if let size = imageOptions.size { imageDict["size"] = size }
+            if let quality = imageOptions.quality { imageDict["quality"] = quality }
+            if let style = imageOptions.style { imageDict["style"] = style }
+            params["imageOptions"] = imageDict
+        }
 
         let response = try await rpcClient.sendRequest(method: "session.send", params: params)
         guard let messageId = response["messageId"] as? String else {

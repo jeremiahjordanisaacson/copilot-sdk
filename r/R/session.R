@@ -42,15 +42,20 @@ CopilotSession <- R6::R6Class(
     #' @param prompt Character. The prompt/message text to send.
     #' @param attachments List or NULL. Optional file/directory attachments.
     #' @param mode Character or NULL. "enqueue" or "immediate".
+    #' @param response_format Character or NULL. Response format ("text", "image", or "json_object").
+    #' @param image_options List or NULL. Image generation options (from \code{image_options()}).
     #'
     #' @return Character. The message ID of the response.
-    send = function(prompt, attachments = NULL, mode = NULL) {
+    send = function(prompt, attachments = NULL, mode = NULL,
+                    response_format = NULL, image_options = NULL) {
       payload <- list(
         sessionId = self$session_id,
         prompt = prompt
       )
       if (!is.null(attachments)) payload$attachments <- attachments
       if (!is.null(mode)) payload$mode <- mode
+      if (!is.null(response_format)) payload$responseFormat <- response_format
+      if (!is.null(image_options)) payload$imageOptions <- image_options
 
       response <- private$client$request("session.send", payload)
       response$messageId
@@ -65,10 +70,14 @@ CopilotSession <- R6::R6Class(
     #' @param prompt Character. The prompt/message text.
     #' @param attachments List or NULL. Optional attachments.
     #' @param mode Character or NULL. Processing mode.
+    #' @param response_format Character or NULL. Response format ("text", "image", or "json_object").
+    #' @param image_options List or NULL. Image generation options (from \code{image_options()}).
     #' @param timeout Numeric. Timeout in seconds (default 60).
     #'
     #' @return The last assistant.message SessionEvent, or NULL if none received.
-    send_and_wait = function(prompt, attachments = NULL, mode = NULL, timeout = 60) {
+    send_and_wait = function(prompt, attachments = NULL, mode = NULL,
+                             response_format = NULL, image_options = NULL,
+                             timeout = 60) {
       last_assistant_message <- NULL
       error_event <- NULL
       idle_received <- FALSE
@@ -90,7 +99,8 @@ CopilotSession <- R6::R6Class(
       on.exit(unsubscribe(), add = TRUE)
 
       # Send the message
-      self$send(prompt = prompt, attachments = attachments, mode = mode)
+      self$send(prompt = prompt, attachments = attachments, mode = mode,
+                response_format = response_format, image_options = image_options)
 
       # Poll until idle or timeout
       start_time <- proc.time()[["elapsed"]]

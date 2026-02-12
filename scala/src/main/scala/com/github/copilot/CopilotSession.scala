@@ -83,6 +83,8 @@ class CopilotSession(
       "prompt" -> options.prompt.asJson,
       "attachments" -> options.attachments.asJson,
       "mode" -> options.mode.asJson,
+      "responseFormat" -> options.responseFormat.asJson,
+      "imageOptions" -> options.imageOptions.asJson,
     ).dropNullValues
 
     connection.sendRequest("session.send", params).map { result =>

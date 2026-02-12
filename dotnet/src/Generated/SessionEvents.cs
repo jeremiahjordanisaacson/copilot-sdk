@@ -24,6 +24,9 @@ namespace GitHub.Copilot.SDK;
     TypeDiscriminatorPropertyName = "type",
     UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FailSerialization)]
 [JsonDerivedType(typeof(AbortEvent), "abort")]
+[JsonDerivedType(typeof(AssistantContentEvent), "assistant.content")]
+[JsonDerivedType(typeof(AssistantImageEvent), "assistant.image")]
+[JsonDerivedType(typeof(AssistantImageDeltaEvent), "assistant.image_delta")]
 [JsonDerivedType(typeof(AssistantIntentEvent), "assistant.intent")]
 [JsonDerivedType(typeof(AssistantMessageEvent), "assistant.message")]
 [JsonDerivedType(typeof(AssistantMessageDeltaEvent), "assistant.message_delta")]
@@ -338,6 +341,42 @@ public partial class AssistantMessageDeltaEvent : SessionEvent
 
     [JsonPropertyName("data")]
     public required AssistantMessageDeltaData Data { get; set; }
+}
+
+/// <summary>
+/// Event: assistant.image
+/// </summary>
+public partial class AssistantImageEvent : SessionEvent
+{
+    [JsonIgnore]
+    public override string Type => "assistant.image";
+
+    [JsonPropertyName("data")]
+    public required AssistantImageEventData Data { get; set; }
+}
+
+/// <summary>
+/// Event: assistant.image_delta
+/// </summary>
+public partial class AssistantImageDeltaEvent : SessionEvent
+{
+    [JsonIgnore]
+    public override string Type => "assistant.image_delta";
+
+    [JsonPropertyName("data")]
+    public required AssistantImageDeltaEventData Data { get; set; }
+}
+
+/// <summary>
+/// Event: assistant.content
+/// </summary>
+public partial class AssistantContentEvent : SessionEvent
+{
+    [JsonIgnore]
+    public override string Type => "assistant.content";
+
+    [JsonPropertyName("data")]
+    public required AssistantContentEventData Data { get; set; }
 }
 
 /// <summary>
@@ -869,6 +908,45 @@ public partial class AssistantMessageDeltaData
     public string? ParentToolCallId { get; set; }
 }
 
+public partial class AssistantImageEventData
+{
+    [JsonPropertyName("messageId")]
+    public required string MessageId { get; set; }
+
+    [JsonPropertyName("image")]
+    public required AssistantImageData Image { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("parentToolCallId")]
+    public string? ParentToolCallId { get; set; }
+}
+
+public partial class AssistantImageDeltaEventData
+{
+    [JsonPropertyName("messageId")]
+    public required string MessageId { get; set; }
+
+    [JsonPropertyName("deltaBase64")]
+    public required string DeltaBase64 { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("parentToolCallId")]
+    public string? ParentToolCallId { get; set; }
+}
+
+public partial class AssistantContentEventData
+{
+    [JsonPropertyName("messageId")]
+    public required string MessageId { get; set; }
+
+    [JsonPropertyName("content")]
+    public required ContentBlock[] Content { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("parentToolCallId")]
+    public string? ParentToolCallId { get; set; }
+}
+
 public partial class AssistantTurnEndData
 {
     [JsonPropertyName("turnId")]
@@ -1386,6 +1464,14 @@ public enum SystemMessageDataRole
     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 [JsonSerializable(typeof(AbortData))]
 [JsonSerializable(typeof(AbortEvent))]
+[JsonSerializable(typeof(AssistantContentEvent))]
+[JsonSerializable(typeof(AssistantContentEventData))]
+[JsonSerializable(typeof(ContentBlock))]
+[JsonSerializable(typeof(AssistantImageData))]
+[JsonSerializable(typeof(AssistantImageDeltaEvent))]
+[JsonSerializable(typeof(AssistantImageDeltaEventData))]
+[JsonSerializable(typeof(AssistantImageEvent))]
+[JsonSerializable(typeof(AssistantImageEventData))]
 [JsonSerializable(typeof(AssistantIntentData))]
 [JsonSerializable(typeof(AssistantIntentEvent))]
 [JsonSerializable(typeof(AssistantMessageData))]

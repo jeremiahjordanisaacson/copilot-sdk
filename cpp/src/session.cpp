@@ -35,6 +35,12 @@ std::string CopilotSession::send(const MessageOptions& options) {
     if (options.mode) {
         params["mode"] = *options.mode;
     }
+    if (options.responseFormat) {
+        params["responseFormat"] = responseFormatToString(*options.responseFormat);
+    }
+    if (options.imageOptions) {
+        params["imageOptions"] = *options.imageOptions;
+    }
 
     auto result = client_->request("session.send", params);
     return result.value("messageId", "");

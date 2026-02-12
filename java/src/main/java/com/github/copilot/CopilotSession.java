@@ -73,6 +73,12 @@ public class CopilotSession {
         if (options.getMode() != null) {
             params.put("mode", options.getMode());
         }
+        if (options.getResponseFormat() != null) {
+            params.put("responseFormat", options.getResponseFormat());
+        }
+        if (options.getImageOptions() != null) {
+            params.put("imageOptions", options.getImageOptions());
+        }
 
         Map<String, Object> response = client.request("session.send", params);
         return (String) response.get("messageId");

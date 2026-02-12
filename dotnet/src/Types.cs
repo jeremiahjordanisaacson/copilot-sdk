@@ -872,11 +872,91 @@ public class ResumeSessionConfig
     public InfiniteSessionConfig? InfiniteSessions { get; set; }
 }
 
+/// <summary>Response format for message responses.</summary>
+[JsonConverter(typeof(JsonStringEnumConverter<ResponseFormat>))]
+public enum ResponseFormat
+{
+    [JsonStringEnumMemberName("text")]
+    Text,
+    [JsonStringEnumMemberName("image")]
+    Image,
+    [JsonStringEnumMemberName("json_object")]
+    JsonObject
+}
+
+/// <summary>Options for image generation.</summary>
+public class ImageOptions
+{
+    /// <summary>Image size (e.g. "1024x1024")</summary>
+    [JsonPropertyName("size")]
+    public string? Size { get; set; }
+
+    /// <summary>Image quality ("hd" or "standard")</summary>
+    [JsonPropertyName("quality")]
+    public string? Quality { get; set; }
+
+    /// <summary>Image style ("natural" or "vivid")</summary>
+    [JsonPropertyName("style")]
+    public string? Style { get; set; }
+}
+
+/// <summary>Image data from an assistant image response.</summary>
+public class AssistantImageData
+{
+    /// <summary>Image format ("png", "jpeg", "webp")</summary>
+    [JsonPropertyName("format")]
+    public string Format { get; set; } = "";
+
+    /// <summary>Base64-encoded image bytes</summary>
+    [JsonPropertyName("base64")]
+    public string Base64 { get; set; } = "";
+
+    /// <summary>Optional temporary URL for the image</summary>
+    [JsonPropertyName("url")]
+    public string? Url { get; set; }
+
+    /// <summary>The prompt the model actually used</summary>
+    [JsonPropertyName("revisedPrompt")]
+    public string? RevisedPrompt { get; set; }
+
+    /// <summary>Image width in pixels</summary>
+    [JsonPropertyName("width")]
+    public int Width { get; set; }
+
+    /// <summary>Image height in pixels</summary>
+    [JsonPropertyName("height")]
+    public int Height { get; set; }
+}
+
+/// <summary>A content block in a mixed text+image response.</summary>
+public class ContentBlock
+{
+    /// <summary>Block type ("text" or "image")</summary>
+    [JsonPropertyName("type")]
+    public string Type { get; set; } = "";
+
+    /// <summary>Text content (when type is "text")</summary>
+    [JsonPropertyName("text")]
+    public string? Text { get; set; }
+
+    /// <summary>Image data (when type is "image")</summary>
+    [JsonPropertyName("image")]
+    public AssistantImageData? Image { get; set; }
+}
+
 public class MessageOptions
 {
     public string Prompt { get; set; } = string.Empty;
     public List<UserMessageDataAttachmentsItem>? Attachments { get; set; }
     public string? Mode { get; set; }
+
+    /// <summary>Desired response format</summary>
+    [JsonPropertyName("responseFormat")]
+    public ResponseFormat? ResponseFormat { get; set; }
+
+    /// <summary>Options for image generation</summary>
+    [JsonPropertyName("imageOptions")]
+    public ImageOptions? ImageOptions { get; set; }
 }
 
 public delegate void SessionEventHandler(SessionEvent sessionEvent);
@@ -1138,8 +1218,11 @@ public class SetForegroundSessionResponse
     AllowOutOfOrderMetadataProperties = true,
     NumberHandling = JsonNumberHandling.AllowReadingFromString,
     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+[JsonSerializable(typeof(AssistantImageData))]
 [JsonSerializable(typeof(AzureOptions))]
+[JsonSerializable(typeof(ContentBlock))]
 [JsonSerializable(typeof(CustomAgentConfig))]
+[JsonSerializable(typeof(ImageOptions))]
 [JsonSerializable(typeof(GetAuthStatusResponse))]
 [JsonSerializable(typeof(GetForegroundSessionResponse))]
 [JsonSerializable(typeof(GetModelsResponse))]

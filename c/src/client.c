@@ -1548,6 +1548,32 @@ copilot_error_t copilot_session_send(
         cJSON_AddStringToObject(params, "mode", options->mode);
     }
 
+    /* Response format */
+    if (options->response_format != COPILOT_RESPONSE_FORMAT_TEXT) {
+        switch (options->response_format) {
+        case COPILOT_RESPONSE_FORMAT_IMAGE:
+            cJSON_AddStringToObject(params, "responseFormat", "image");
+            break;
+        case COPILOT_RESPONSE_FORMAT_JSON_OBJECT:
+            cJSON_AddStringToObject(params, "responseFormat", "json_object");
+            break;
+        default:
+            break;
+        }
+    }
+
+    /* Image generation options */
+    if (options->image_options) {
+        cJSON *img_opts = cJSON_CreateObject();
+        if (options->image_options->size)
+            cJSON_AddStringToObject(img_opts, "size", options->image_options->size);
+        if (options->image_options->quality)
+            cJSON_AddStringToObject(img_opts, "quality", options->image_options->quality);
+        if (options->image_options->style)
+            cJSON_AddStringToObject(img_opts, "style", options->image_options->style);
+        cJSON_AddItemToObject(params, "imageOptions", img_opts);
+    }
+
     /* Attachments */
     if (options->attachments && options->attachments_count > 0) {
         cJSON *arr = cJSON_CreateArray();

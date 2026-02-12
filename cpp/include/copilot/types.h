@@ -581,13 +581,104 @@ struct ResumeSessionConfig {
 };
 
 // ============================================================================
+// Response Format & Image Types
+// ============================================================================
+
+/** Response format for message responses. */
+enum class ResponseFormat {
+    Text,
+    Image,
+    JsonObject
+};
+
+/** Convert ResponseFormat to string for JSON serialization. */
+inline std::string responseFormatToString(ResponseFormat format) {
+    switch (format) {
+        case ResponseFormat::Text: return "text";
+        case ResponseFormat::Image: return "image";
+        case ResponseFormat::JsonObject: return "json_object";
+        default: return "text";
+    }
+}
+
+/** Options for image generation. */
+struct ImageOptions {
+    std::string size;       // e.g. "1024x1024"
+    std::string quality;    // "hd" or "standard"
+    std::string style;      // "natural" or "vivid"
+};
+
+inline void to_json(nlohmann::json& j, const ImageOptions& o) {
+    j = nlohmann::json::object();
+    if (!o.size.empty()) j["size"] = o.size;
+    if (!o.quality.empty()) j["quality"] = o.quality;
+    if (!o.style.empty()) j["style"] = o.style;
+}
+
+inline void from_json(const nlohmann::json& j, ImageOptions& o) {
+    if (j.contains("size")) j["size"].get_to(o.size);
+    if (j.contains("quality")) j["quality"].get_to(o.quality);
+    if (j.contains("style")) j["style"].get_to(o.style);
+}
+
+/** Image data from an assistant image response. */
+struct AssistantImageData {
+    std::string format;          // "png", "jpeg", "webp"
+    std::string base64;          // Base64-encoded image bytes
+    std::string url;             // Optional temporary URL
+    std::string revisedPrompt;   // The prompt the model actually used
+    int width = 0;
+    int height = 0;
+};
+
+inline void to_json(nlohmann::json& j, const AssistantImageData& d) {
+    j = nlohmann::json::object();
+    if (!d.format.empty()) j["format"] = d.format;
+    if (!d.base64.empty()) j["base64"] = d.base64;
+    if (!d.url.empty()) j["url"] = d.url;
+    if (!d.revisedPrompt.empty()) j["revisedPrompt"] = d.revisedPrompt;
+    if (d.width > 0) j["width"] = d.width;
+    if (d.height > 0) j["height"] = d.height;
+}
+
+inline void from_json(const nlohmann::json& j, AssistantImageData& d) {
+    if (j.contains("format")) j["format"].get_to(d.format);
+    if (j.contains("base64")) j["base64"].get_to(d.base64);
+    if (j.contains("url")) j["url"].get_to(d.url);
+    if (j.contains("revisedPrompt")) j["revisedPrompt"].get_to(d.revisedPrompt);
+    if (j.contains("width")) j["width"].get_to(d.width);
+    if (j.contains("height")) j["height"].get_to(d.height);
+}
+
+/** A content block in a mixed text+image response. */
+struct ContentBlock {
+    std::string type;            // "text" or "image"
+    std::string text;            // Text content (when type is "text")
+    AssistantImageData image;    // Image data (when type is "image")
+};
+
+inline void to_json(nlohmann::json& j, const ContentBlock& b) {
+    j = {{"type", b.type}};
+    if (b.type == "text" && !b.text.empty()) j["text"] = b.text;
+    if (b.type == "image") j["image"] = b.image;
+}
+
+inline void from_json(const nlohmann::json& j, ContentBlock& b) {
+    j.at("type").get_to(b.type);
+    if (j.contains("text")) j["text"].get_to(b.text);
+    if (j.contains("image")) b.image = j["image"].get<AssistantImageData>();
+}
+
+// ============================================================================
 // Message Options
 // ============================================================================
 
 struct MessageOptions {
     std::string prompt;
     std::vector<Attachment> attachments;
-    std::optional<std::string> mode; // "enqueue" or "immediate"
+    std::optional<std::string> mode;              // "enqueue" or "immediate"
+    std::optional<ResponseFormat> responseFormat;  // Desired response format
+    std::optional<ImageOptions> imageOptions;      // Options for image generation
 };
 
 // ============================================================================

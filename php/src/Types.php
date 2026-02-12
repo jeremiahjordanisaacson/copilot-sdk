@@ -784,6 +784,78 @@ class SessionEvent
 }
 
 // ============================================================================
+// Response Format & Image Types
+// ============================================================================
+
+class ResponseFormat
+{
+    const TEXT = 'text';
+    const IMAGE = 'image';
+    const JSON_OBJECT = 'json_object';
+}
+
+class ImageOptions
+{
+    public function __construct(
+        public readonly ?string $size = null,
+        public readonly ?string $quality = null,
+        public readonly ?string $style = null,
+    ) {}
+
+    public function toArray(): array
+    {
+        return array_filter([
+            'size' => $this->size,
+            'quality' => $this->quality,
+            'style' => $this->style,
+        ], fn($v) => $v !== null);
+    }
+}
+
+class AssistantImageData
+{
+    public function __construct(
+        public readonly string $format,
+        public readonly string $base64,
+        public readonly int $width,
+        public readonly int $height,
+        public readonly ?string $url = null,
+        public readonly ?string $revisedPrompt = null,
+    ) {}
+
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            format: $data['format'] ?? '',
+            base64: $data['base64'] ?? '',
+            width: $data['width'] ?? 0,
+            height: $data['height'] ?? 0,
+            url: $data['url'] ?? null,
+            revisedPrompt: $data['revisedPrompt'] ?? null,
+        );
+    }
+}
+
+class ContentBlock
+{
+    public function __construct(
+        public readonly string $type,
+        public readonly ?string $text = null,
+        public readonly ?AssistantImageData $image = null,
+    ) {}
+
+    public static function fromArray(array $data): self
+    {
+        $image = isset($data['image']) ? AssistantImageData::fromArray($data['image']) : null;
+        return new self(
+            type: $data['type'] ?? '',
+            text: $data['text'] ?? null,
+            image: $image,
+        );
+    }
+}
+
+// ============================================================================
 // Message Options
 // ============================================================================
 
@@ -879,11 +951,15 @@ class MessageOptions
      * @param string $prompt The prompt/message to send
      * @param array<FileAttachment|DirectoryAttachment|SelectionAttachment>|null $attachments
      * @param string|null $mode "enqueue" (default) or "immediate"
+     * @param string|null $responseFormat Response format (see ResponseFormat constants)
+     * @param ImageOptions|null $imageOptions Image generation options
      */
     public function __construct(
         public readonly string $prompt,
         public readonly ?array $attachments = null,
         public readonly ?string $mode = null,
+        public readonly ?string $responseFormat = null,
+        public readonly ?ImageOptions $imageOptions = null,
     ) {}
 
     public function toArray(): array
@@ -897,6 +973,12 @@ class MessageOptions
         }
         if ($this->mode !== null) {
             $result['mode'] = $this->mode;
+        }
+        if ($this->responseFormat !== null) {
+            $result['responseFormat'] = $this->responseFormat;
+        }
+        if ($this->imageOptions !== null) {
+            $result['imageOptions'] = $this->imageOptions->toArray();
         }
         return $result;
     }

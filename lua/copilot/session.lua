@@ -46,16 +46,18 @@ end
 -- ---------------------------------------------------------------------------
 
 --- Send a message to this session.
--- @param options table  MessageOptions with fields: prompt, attachments, mode
+-- @param options table  MessageOptions with fields: prompt, attachments, mode, responseFormat, imageOptions
 -- @return string|nil messageId
 -- @return string|nil error
 function CopilotSession:send(options)
     options = options or {}
     local req = {
-        sessionId   = self.session_id,
-        prompt      = options.prompt or "",
-        attachments = options.attachments,
-        mode        = options.mode,
+        sessionId      = self.session_id,
+        prompt         = options.prompt or "",
+        attachments    = options.attachments,
+        mode           = options.mode,
+        responseFormat = options.responseFormat,
+        imageOptions   = options.imageOptions,
     }
 
     local result, err = self._rpc_client:request("session.send", req)

@@ -480,6 +480,51 @@ type ToolBinaryResult struct {
 	Description string `json:"description,omitempty"`
 }
 
+// ResponseFormat specifies the desired response format
+type ResponseFormat string
+
+const (
+	ResponseFormatText       ResponseFormat = "text"
+	ResponseFormatImage      ResponseFormat = "image"
+	ResponseFormatJSONObject ResponseFormat = "json_object"
+)
+
+// ImageOptions configures image generation parameters
+type ImageOptions struct {
+	// Size is the image dimensions (e.g. "1024x1024")
+	Size string `json:"size,omitempty"`
+	// Quality is the image quality ("hd" or "standard")
+	Quality string `json:"quality,omitempty"`
+	// Style is the image style ("natural" or "vivid")
+	Style string `json:"style,omitempty"`
+}
+
+// AssistantImageData contains image data from an assistant image response
+type AssistantImageData struct {
+	// Format is the image format ("png", "jpeg", "webp")
+	Format string `json:"format"`
+	// Base64 is the base64-encoded image bytes
+	Base64 string `json:"base64"`
+	// URL is an optional temporary URL for the image
+	URL string `json:"url,omitempty"`
+	// RevisedPrompt is the prompt the model actually used
+	RevisedPrompt string `json:"revisedPrompt,omitempty"`
+	// Width is the image width in pixels
+	Width int `json:"width"`
+	// Height is the image height in pixels
+	Height int `json:"height"`
+}
+
+// ContentBlock represents a block in a mixed text+image response
+type ContentBlock struct {
+	// Type is "text" or "image"
+	Type string `json:"type"`
+	// Text contains text content (when Type is "text")
+	Text string `json:"text,omitempty"`
+	// Image contains image data (when Type is "image")
+	Image *AssistantImageData `json:"image,omitempty"`
+}
+
 // MessageOptions configures a message to send
 type MessageOptions struct {
 	// Prompt is the message to send
@@ -488,6 +533,10 @@ type MessageOptions struct {
 	Attachments []Attachment
 	// Mode is the message delivery mode (default: "enqueue")
 	Mode string
+	// ResponseFormat is the desired response format (default: "text")
+	ResponseFormat ResponseFormat `json:"responseFormat,omitempty"`
+	// ImageOptions configures image generation (only used when ResponseFormat is "image")
+	ImageOptions *ImageOptions `json:"imageOptions,omitempty"`
 }
 
 // SessionEventHandler is a callback for session events
@@ -754,10 +803,12 @@ type sessionAbortRequest struct {
 }
 
 type sessionSendRequest struct {
-	SessionID   string       `json:"sessionId"`
-	Prompt      string       `json:"prompt"`
-	Attachments []Attachment `json:"attachments,omitempty"`
-	Mode        string       `json:"mode,omitempty"`
+	SessionID      string         `json:"sessionId"`
+	Prompt         string         `json:"prompt"`
+	Attachments    []Attachment   `json:"attachments,omitempty"`
+	Mode           string         `json:"mode,omitempty"`
+	ResponseFormat ResponseFormat `json:"responseFormat,omitempty"`
+	ImageOptions   *ImageOptions  `json:"imageOptions,omitempty"`
 }
 
 // sessionSendResponse is the response from session.send

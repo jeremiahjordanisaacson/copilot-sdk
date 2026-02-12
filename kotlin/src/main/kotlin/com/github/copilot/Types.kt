@@ -342,6 +342,53 @@ data class SessionHooks(
 }
 
 // ============================================================================
+// Image Generation Types
+// ============================================================================
+
+/**
+ * Response format for message responses.
+ */
+@Serializable
+enum class ResponseFormat {
+    @SerialName("text") TEXT,
+    @SerialName("image") IMAGE,
+    @SerialName("json_object") JSON_OBJECT
+}
+
+/**
+ * Options for image generation.
+ */
+@Serializable
+data class ImageOptions(
+    val size: String? = null,
+    val quality: String? = null,
+    val style: String? = null
+)
+
+/**
+ * Image data from an assistant image response.
+ */
+@Serializable
+data class AssistantImageData(
+    val format: String,
+    val base64: String,
+    val url: String? = null,
+    val revisedPrompt: String? = null,
+    val width: Int,
+    val height: Int
+)
+
+/**
+ * A content block in a mixed text+image response.
+ */
+@Serializable
+data class ContentBlock(
+    val type: String,
+    val text: String? = null,
+    val image: AssistantImageData? = null
+)
+
+// ============================================================================
 // Message Options
 // ============================================================================
 
@@ -376,7 +423,9 @@ data class Attachment(
 data class MessageOptions(
     val prompt: String,
     val attachments: List<Attachment>? = null,
-    val mode: String? = null
+    val mode: String? = null,
+    val responseFormat: ResponseFormat? = null,
+    val imageOptions: ImageOptions? = null
 )
 
 // ============================================================================

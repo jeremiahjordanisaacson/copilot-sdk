@@ -6,6 +6,12 @@
 #
 # Requires: json_rpc.sh
 
+# --- Response Format Constants ---
+# Use these with the response_format parameter of send functions.
+COPILOT_RESPONSE_FORMAT_TEXT="text"
+COPILOT_RESPONSE_FORMAT_IMAGE="image"
+COPILOT_RESPONSE_FORMAT_JSON_OBJECT="json_object"
+
 # --- Session State ---
 # The active session ID (set by copilot_client_create_session / resume)
 COPILOT_SESSION_ID=""
@@ -21,18 +27,23 @@ COPILOT_SESSION_MESSAGES=""
 # Arguments:
 #   $1 - The prompt text (required)
 #   $2 - Optional session ID (defaults to COPILOT_SESSION_ID)
+#   $3 - Optional response format (use COPILOT_RESPONSE_FORMAT_* constants)
+#   $4 - Optional image options JSON string (e.g. '{"size":"1024x1024","quality":"high","style":"natural"}')
 #
 # Sets:
 #   COPILOT_JSONRPC_LAST_RESPONSE - The full send response
 #
 # Usage:
 #   copilot_session_send "What is 2+2?"
+#   copilot_session_send "Generate a cat" "" "$COPILOT_RESPONSE_FORMAT_IMAGE" '{"size":"1024x1024","quality":"high","style":"natural"}'
 #   message_id=$(copilot_jsonrpc_get_result_field '.messageId')
 #
 # Returns 0 on success, 1 on failure.
 copilot_session_send() {
     local prompt="$1"
     local session_id="${2:-$COPILOT_SESSION_ID}"
+    local response_format="${3:-}"
+    local image_options="${4:-}"
 
     if [[ -z "$session_id" ]]; then
         echo "ERROR: No active session. Create or resume a session first." >&2
@@ -49,6 +60,16 @@ copilot_session_send() {
         --arg sid "$session_id" \
         --arg prompt "$prompt" \
         '{"sessionId":$sid,"prompt":$prompt}')
+
+    # Add optional responseFormat if provided
+    if [[ -n "$response_format" ]]; then
+        params=$(echo "$params" | jq -c --arg rf "$response_format" '. + {"responseFormat":$rf}')
+    fi
+
+    # Add optional imageOptions if provided (expects a JSON string)
+    if [[ -n "$image_options" ]]; then
+        params=$(echo "$params" | jq -c --argjson io "$image_options" '. + {"imageOptions":$io}')
+    fi
 
     if ! copilot_jsonrpc_request "session.send" "$params"; then
         echo "ERROR: Failed to send message" >&2
@@ -68,6 +89,8 @@ copilot_session_send() {
 #   $2 - Optional session ID (defaults to COPILOT_SESSION_ID)
 #   $3 - Timeout in seconds (default: 60)
 #   $4 - Poll interval in seconds (default: 1)
+#   $5 - Optional response format (use COPILOT_RESPONSE_FORMAT_* constants)
+#   $6 - Optional image options JSON string (e.g. '{"size":"1024x1024","quality":"high","style":"natural"}')
 #
 # Sets:
 #   COPILOT_SESSION_LAST_RESPONSE - The last assistant message content (text)
@@ -79,6 +102,8 @@ copilot_session_send_and_wait() {
     local session_id="${2:-$COPILOT_SESSION_ID}"
     local timeout="${3:-60}"
     local poll_interval="${4:-1}"
+    local response_format="${5:-}"
+    local image_options="${6:-}"
 
     COPILOT_SESSION_LAST_RESPONSE=""
 
@@ -98,6 +123,16 @@ copilot_session_send_and_wait() {
         --arg sid "$session_id" \
         --arg prompt "$prompt" \
         '{"sessionId":$sid,"prompt":$prompt}')
+
+    # Add optional responseFormat if provided
+    if [[ -n "$response_format" ]]; then
+        params=$(echo "$params" | jq -c --arg rf "$response_format" '. + {"responseFormat":$rf}')
+    fi
+
+    # Add optional imageOptions if provided (expects a JSON string)
+    if [[ -n "$image_options" ]]; then
+        params=$(echo "$params" | jq -c --argjson io "$image_options" '. + {"imageOptions":$io}')
+    fi
 
     if ! copilot_jsonrpc_request "session.send" "$params"; then
         echo "ERROR: Failed to send message" >&2

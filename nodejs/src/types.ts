@@ -800,6 +800,48 @@ export interface ProviderConfig {
 }
 
 /**
+ * Response format for message responses.
+ */
+export type ResponseFormat = "text" | "image" | "json_object";
+
+/**
+ * Options for image generation.
+ */
+export interface ImageOptions {
+    /** Image size (e.g. "1024x1024") */
+    size?: string;
+    /** Image quality ("hd" or "standard") */
+    quality?: string;
+    /** Image style ("natural" or "vivid") */
+    style?: string;
+}
+
+/**
+ * Image data from an assistant image response.
+ */
+export interface AssistantImageData {
+    /** Image format ("png", "jpeg", "webp") */
+    format: string;
+    /** Base64-encoded image bytes */
+    base64: string;
+    /** Optional temporary URL for the image */
+    url?: string;
+    /** The prompt the model actually used (may differ from the original) */
+    revisedPrompt?: string;
+    /** Image width in pixels */
+    width: number;
+    /** Image height in pixels */
+    height: number;
+}
+
+/**
+ * A content block in a mixed text+image response.
+ */
+export type ContentBlock =
+    | { type: "text"; text: string }
+    | { type: "image"; image: AssistantImageData };
+
+/**
  * Options for sending a message to a session
  */
 export interface MessageOptions {
@@ -840,6 +882,19 @@ export interface MessageOptions {
      * - "immediate": Send immediately
      */
     mode?: "enqueue" | "immediate";
+
+    /**
+     * Desired response format
+     * - "text": Plain text (default)
+     * - "image": Image generation
+     * - "json_object": Structured JSON
+     */
+    responseFormat?: ResponseFormat;
+
+    /**
+     * Options for image generation (only used when responseFormat is "image")
+     */
+    imageOptions?: ImageOptions;
 }
 
 /**

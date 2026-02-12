@@ -375,6 +375,41 @@ typedef struct {
 copilot_session_config_t copilot_session_config_default(void);
 
 /* ============================================================================
+ * Image generation types
+ * ============================================================================ */
+
+/** Response format for message responses. */
+typedef enum {
+    COPILOT_RESPONSE_FORMAT_TEXT = 0,
+    COPILOT_RESPONSE_FORMAT_IMAGE = 1,
+    COPILOT_RESPONSE_FORMAT_JSON_OBJECT = 2
+} copilot_response_format_t;
+
+/** Options for image generation. */
+typedef struct {
+    const char *size;       /**< e.g. "1024x1024" */
+    const char *quality;    /**< "hd" or "standard" */
+    const char *style;      /**< "natural" or "vivid" */
+} copilot_image_options_t;
+
+/** Image data from an assistant image response. */
+typedef struct {
+    const char *format;          /**< "png", "jpeg", "webp" */
+    const char *base64;          /**< Base64-encoded image bytes */
+    const char *url;             /**< Optional temporary URL (may be NULL) */
+    const char *revised_prompt;  /**< The prompt the model actually used (may be NULL) */
+    int width;
+    int height;
+} copilot_assistant_image_data_t;
+
+/** A content block in a mixed text+image response. */
+typedef struct {
+    const char *type;                        /**< "text" or "image" */
+    const char *text;                        /**< Text content (when type is "text", else NULL) */
+    copilot_assistant_image_data_t *image;   /**< Image data (when type is "image", else NULL) */
+} copilot_content_block_t;
+
+/* ============================================================================
  * Message options
  * ============================================================================ */
 
@@ -383,6 +418,8 @@ typedef struct {
     const copilot_attachment_t *attachments; /**< Array of attachments, or NULL */
     size_t attachments_count;
     const char *mode;                       /**< "enqueue" (default) or "immediate" */
+    copilot_response_format_t response_format;        /**< Response format (default: TEXT) */
+    const copilot_image_options_t *image_options;      /**< Image generation options, or NULL */
 } copilot_message_options_t;
 
 /* ============================================================================

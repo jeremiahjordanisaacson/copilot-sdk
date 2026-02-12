@@ -743,6 +743,88 @@ public struct ResumeSessionConfig: Sendable {
     }
 }
 
+// MARK: - Response Format
+
+/// Response format for message responses.
+public enum ResponseFormat: String, Codable, Sendable {
+    case text
+    case image
+    case jsonObject = "json_object"
+}
+
+// MARK: - Image Generation Types
+
+/// Options for image generation.
+public struct ImageOptions: Codable, Sendable {
+    /// Image size (e.g. "1024x1024")
+    public var size: String?
+    /// Image quality ("hd" or "standard")
+    public var quality: String?
+    /// Image style ("natural" or "vivid")
+    public var style: String?
+
+    public init(size: String? = nil, quality: String? = nil, style: String? = nil) {
+        self.size = size
+        self.quality = quality
+        self.style = style
+    }
+}
+
+/// Image data from an assistant image response.
+public struct AssistantImageData: Codable, Sendable {
+    /// Image format ("png", "jpeg", "webp")
+    public var format: String
+    /// Base64-encoded image bytes
+    public var base64: String
+    /// Optional temporary URL for the image
+    public var url: String?
+    /// The prompt the model actually used
+    public var revisedPrompt: String?
+    /// Image width in pixels
+    public var width: Int
+    /// Image height in pixels
+    public var height: Int
+}
+
+/// A content block in a mixed text+image response.
+public enum ContentBlock: Codable, Sendable {
+    case text(String)
+    case image(AssistantImageData)
+
+    enum CodingKeys: String, CodingKey {
+        case type, text, image
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let type = try container.decode(String.self, forKey: .type)
+        switch type {
+        case "text":
+            let text = try container.decode(String.self, forKey: .text)
+            self = .text(text)
+        case "image":
+            let image = try container.decode(AssistantImageData.self, forKey: .image)
+            self = .image(image)
+        default:
+            throw DecodingError.dataCorruptedError(
+                forKey: .type, in: container,
+                debugDescription: "Unknown content block type: \(type)")
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        switch self {
+        case .text(let text):
+            try container.encode("text", forKey: .type)
+            try container.encode(text, forKey: .text)
+        case .image(let image):
+            try container.encode("image", forKey: .type)
+            try container.encode(image, forKey: .image)
+        }
+    }
+}
+
 // MARK: - Message Options
 
 /// Attachment types for messages.
@@ -789,11 +871,21 @@ public struct MessageOptions: Sendable {
     public var prompt: String
     public var attachments: [Attachment]?
     public var mode: String?
+    public var responseFormat: ResponseFormat?
+    public var imageOptions: ImageOptions?
 
-    public init(prompt: String, attachments: [Attachment]? = nil, mode: String? = nil) {
+    public init(
+        prompt: String,
+        attachments: [Attachment]? = nil,
+        mode: String? = nil,
+        responseFormat: ResponseFormat? = nil,
+        imageOptions: ImageOptions? = nil
+    ) {
         self.prompt = prompt
         self.attachments = attachments
         self.mode = mode
+        self.responseFormat = responseFormat
+        self.imageOptions = imageOptions
     }
 }
 

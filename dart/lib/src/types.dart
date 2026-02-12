@@ -1044,6 +1044,97 @@ class SessionLifecycleEvent {
 typedef SessionLifecycleHandler = void Function(SessionLifecycleEvent event);
 
 // ---------------------------------------------------------------------------
+// Response Format & Image Generation
+// ---------------------------------------------------------------------------
+
+/// Response format for message responses.
+enum ResponseFormat {
+  text,
+  image,
+  jsonObject;
+
+  String toJson() {
+    switch (this) {
+      case ResponseFormat.text:
+        return 'text';
+      case ResponseFormat.image:
+        return 'image';
+      case ResponseFormat.jsonObject:
+        return 'json_object';
+    }
+  }
+}
+
+/// Options for image generation.
+class ImageOptions {
+  /// Image size (e.g. "1024x1024").
+  final String? size;
+
+  /// Image quality ("hd" or "standard").
+  final String? quality;
+
+  /// Image style ("natural" or "vivid").
+  final String? style;
+
+  const ImageOptions({this.size, this.quality, this.style});
+
+  Map<String, dynamic> toJson() => {
+        if (size != null) 'size': size,
+        if (quality != null) 'quality': quality,
+        if (style != null) 'style': style,
+      };
+}
+
+/// Image data from an assistant image response.
+class AssistantImageData {
+  final String format;
+  final String base64;
+  final String? url;
+  final String? revisedPrompt;
+  final int width;
+  final int height;
+
+  const AssistantImageData({
+    required this.format,
+    required this.base64,
+    this.url,
+    this.revisedPrompt,
+    required this.width,
+    required this.height,
+  });
+
+  factory AssistantImageData.fromJson(Map<String, dynamic> json) {
+    return AssistantImageData(
+      format: json['format'] as String,
+      base64: json['base64'] as String,
+      url: json['url'] as String?,
+      revisedPrompt: json['revisedPrompt'] as String?,
+      width: json['width'] as int,
+      height: json['height'] as int,
+    );
+  }
+}
+
+/// A content block in a mixed text+image response.
+class ContentBlock {
+  final String type;
+  final String? text;
+  final AssistantImageData? image;
+
+  const ContentBlock({required this.type, this.text, this.image});
+
+  factory ContentBlock.fromJson(Map<String, dynamic> json) {
+    return ContentBlock(
+      type: json['type'] as String,
+      text: json['text'] as String?,
+      image: json['image'] != null
+          ? AssistantImageData.fromJson(json['image'] as Map<String, dynamic>)
+          : null,
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Message Options
 // ---------------------------------------------------------------------------
 
@@ -1126,10 +1217,18 @@ class MessageOptions {
   /// One of: enqueue, immediate
   final String? mode;
 
+  /// Desired response format (text, image, or json_object).
+  final ResponseFormat? responseFormat;
+
+  /// Options for image generation (used when [responseFormat] is image).
+  final ImageOptions? imageOptions;
+
   const MessageOptions({
     required this.prompt,
     this.attachments,
     this.mode,
+    this.responseFormat,
+    this.imageOptions,
   });
 }
 

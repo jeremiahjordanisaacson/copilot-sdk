@@ -238,8 +238,24 @@ module Copilot
     keyword_init: true
   )
 
+  # Response format for message responses.
+  RESPONSE_FORMATS = %w[text image json_object].freeze
+
+  # Options for image generation.
+  ImageOptions = Struct.new(:size, :quality, :style, keyword_init: true) do
+    def to_h
+      super.compact
+    end
+  end
+
+  # Image data from an assistant image response.
+  AssistantImageData = Struct.new(:format, :base64, :url, :revised_prompt, :width, :height, keyword_init: true)
+
+  # A content block in a mixed text+image response.
+  ContentBlock = Struct.new(:type, :text, :image, keyword_init: true)
+
   # Options for sending a message.
-  MessageOptions = Struct.new(:prompt, :attachments, :mode, keyword_init: true)
+  MessageOptions = Struct.new(:prompt, :attachments, :mode, :response_format, :image_options, keyword_init: true)
 
   # Ping response from the server.
   PingResponse = Struct.new(:message, :timestamp, :protocol_version, keyword_init: true) do

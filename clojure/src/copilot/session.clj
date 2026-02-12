@@ -164,16 +164,21 @@
 (defn send!
   "Send a message to this session.
 
-  `options` - message options map with :prompt and optional :attachments, :mode
+  `options` - message options map with :prompt and optional :attachments, :mode,
+              :response-format, :image-options
 
   Returns the message ID string."
   [session-atom options]
   (let [state      @session-atom
         rpc-client (:rpc-client state)
-        params     {:sessionId   (:session-id state)
-                    :prompt      (:prompt options)
-                    :attachments (:attachments options)
-                    :mode        (:mode options)}
+        params     (cond-> {:sessionId   (:session-id state)
+                            :prompt      (:prompt options)
+                            :attachments (:attachments options)
+                            :mode        (:mode options)}
+                     (:response-format options)
+                     (assoc :responseFormat (:response-format options))
+                     (:image-options options)
+                     (assoc :imageOptions (:image-options options)))
         response   (rpc/request! rpc-client "session.send" params)]
     (:messageId response)))
 

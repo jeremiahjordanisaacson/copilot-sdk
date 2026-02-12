@@ -114,14 +114,19 @@ class CopilotSession:
             ...     "attachments": [{"type": "file", "path": "./src/main.py"}]
             ... })
         """
+        params = {
+            "sessionId": self.session_id,
+            "prompt": options["prompt"],
+            "attachments": options.get("attachments"),
+            "mode": options.get("mode"),
+        }
+        if "response_format" in options:
+            params["responseFormat"] = options["response_format"]
+        if "image_options" in options:
+            params["imageOptions"] = options["image_options"]
         response = await self._client.request(
             "session.send",
-            {
-                "sessionId": self.session_id,
-                "prompt": options["prompt"],
-                "attachments": options.get("attachments"),
-                "mode": options.get("mode"),
-            },
+            params,
         )
         return response["messageId"]
 

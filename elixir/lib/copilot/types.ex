@@ -494,6 +494,40 @@ defmodule Copilot.Types do
   end
 
   # ---------------------------------------------------------------------------
+  # Image Generation / Response Format Types
+  # ---------------------------------------------------------------------------
+
+  @typedoc "The response format for a message."
+  @type response_format :: :text | :image | :json_object
+
+  @typedoc "Options for image generation."
+  @type image_options :: %{
+          optional(:size) => String.t(),
+          optional(:quality) => String.t(),
+          optional(:style) => String.t()
+        }
+
+  @typedoc "Image data returned by the assistant."
+  @type assistant_image_data :: %{
+          format: String.t(),
+          base64: String.t(),
+          url: String.t() | nil,
+          revised_prompt: String.t() | nil,
+          width: integer(),
+          height: integer()
+        }
+
+  @typedoc "A content block in an assistant response (text or image)."
+  @type content_block ::
+          %{type: :text, text: String.t()}
+          | %{type: :image, image: assistant_image_data()}
+
+  @doc "Convert response format atom to JSON string."
+  def response_format_to_string(:text), do: "text"
+  def response_format_to_string(:image), do: "image"
+  def response_format_to_string(:json_object), do: "json_object"
+
+  # ---------------------------------------------------------------------------
   # Message Options
   # ---------------------------------------------------------------------------
 
@@ -502,9 +536,11 @@ defmodule Copilot.Types do
     @type t :: %__MODULE__{
             prompt: String.t(),
             attachments: [map()] | nil,
-            mode: String.t() | nil
+            mode: String.t() | nil,
+            response_format: Copilot.Types.response_format() | nil,
+            image_options: Copilot.Types.image_options() | nil
           }
-    defstruct [:prompt, :attachments, :mode]
+    defstruct [:prompt, :attachments, :mode, :response_format, :image_options]
   end
 
   # ---------------------------------------------------------------------------

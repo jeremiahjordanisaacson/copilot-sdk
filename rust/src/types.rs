@@ -629,6 +629,53 @@ pub enum Attachment {
     Selection(SelectionAttachment),
 }
 
+/// Response format for message responses.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum ResponseFormat {
+    #[serde(rename = "text")]
+    Text,
+    #[serde(rename = "image")]
+    Image,
+    #[serde(rename = "json_object")]
+    JsonObject,
+}
+
+/// Options for image generation.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ImageOptions {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub size: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub quality: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub style: Option<String>,
+}
+
+/// Image data from an assistant image response.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AssistantImageData {
+    pub format: String,
+    pub base64: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub revised_prompt: Option<String>,
+    pub width: u32,
+    pub height: u32,
+}
+
+/// A content block in a mixed text+image response.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub enum ContentBlock {
+    #[serde(rename = "text")]
+    Text { text: String },
+    #[serde(rename = "image")]
+    Image { image: AssistantImageData },
+}
+
 /// Options for sending a message to a session.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -638,6 +685,10 @@ pub struct MessageOptions {
     pub attachments: Option<Vec<Attachment>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub mode: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub response_format: Option<ResponseFormat>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub image_options: Option<ImageOptions>,
 }
 
 // ============================================================================

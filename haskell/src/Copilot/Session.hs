@@ -124,10 +124,12 @@ workspacePath = csWorkspacePath
 send :: CopilotSession -> MessageOptions -> IO Text
 send session opts = do
   let reqParams = object $ filter ((/= Null) . snd)
-        [ "sessionId"   .= csSessionId session
-        , "prompt"      .= moPrompt opts
-        , "attachments" .= moAttachments opts
-        , "mode"        .= moMode opts
+        [ "sessionId"      .= csSessionId session
+        , "prompt"         .= moPrompt opts
+        , "attachments"    .= moAttachments opts
+        , "mode"           .= moMode opts
+        , "responseFormat" .= moResponseFormat opts
+        , "imageOptions"   .= moImageOptions opts
         ]
   result <- sendRequest (csJsonRpc session) "session.send" reqParams
   case result of

@@ -122,7 +122,9 @@ public partial class CopilotSession : IAsyncDisposable
             SessionId = SessionId,
             Prompt = options.Prompt,
             Attachments = options.Attachments,
-            Mode = options.Mode
+            Mode = options.Mode,
+            ResponseFormat = options.ResponseFormat,
+            ImageOptions = options.ImageOptions
         };
 
         var response = await InvokeRpcAsync<SendMessageResponse>(
@@ -581,6 +583,8 @@ public partial class CopilotSession : IAsyncDisposable
         public string Prompt { get; init; } = string.Empty;
         public List<UserMessageDataAttachmentsItem>? Attachments { get; init; }
         public string? Mode { get; init; }
+        public ResponseFormat? ResponseFormat { get; init; }
+        public ImageOptions? ImageOptions { get; init; }
     }
 
     internal record SendMessageResponse

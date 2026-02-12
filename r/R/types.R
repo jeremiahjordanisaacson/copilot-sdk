@@ -758,6 +758,8 @@ Tool <- R6::R6Class(
 #' @field prompt Character. The prompt/message text to send.
 #' @field attachments List or NULL. Optional file/directory attachments.
 #' @field mode Character or NULL. Message processing mode ("enqueue" or "immediate").
+#' @field response_format Character or NULL. Response format ("text", "image", or "json_object").
+#' @field image_options List or NULL. Image generation options (from \code{image_options()}).
 #' @export
 MessageOptions <- R6::R6Class(
   "MessageOptions",
@@ -765,15 +767,22 @@ MessageOptions <- R6::R6Class(
     prompt = NULL,
     attachments = NULL,
     mode = NULL,
+    response_format = NULL,
+    image_options = NULL,
 
     #' @description Create new MessageOptions.
     #' @param prompt Character. The prompt text.
     #' @param attachments List or NULL.
     #' @param mode Character or NULL.
-    initialize = function(prompt, attachments = NULL, mode = NULL) {
+    #' @param response_format Character or NULL. One of RESPONSE_FORMATS.
+    #' @param image_options List or NULL. Image generation options.
+    initialize = function(prompt, attachments = NULL, mode = NULL,
+                          response_format = NULL, image_options = NULL) {
       self$prompt <- prompt
       self$attachments <- attachments
       self$mode <- mode
+      self$response_format <- response_format
+      self$image_options <- image_options
     },
 
     #' @description Convert to list.
@@ -781,10 +790,64 @@ MessageOptions <- R6::R6Class(
       result <- list(prompt = self$prompt)
       if (!is.null(self$attachments)) result$attachments <- self$attachments
       if (!is.null(self$mode)) result$mode <- self$mode
+      if (!is.null(self$response_format)) result$responseFormat <- self$response_format
+      if (!is.null(self$image_options)) result$imageOptions <- self$image_options
       result
     }
   )
 )
+
+
+# ---------------------------------------------------------------------------
+# Image Generation Types
+# ---------------------------------------------------------------------------
+
+#' Valid response format values
+#' @export
+RESPONSE_FORMATS <- c("text", "image", "json_object")
+
+#' Create image options for image generation
+#'
+#' @param size Image size (e.g. "1024x1024")
+#' @param quality Image quality ("hd" or "standard")
+#' @param style Image style ("natural" or "vivid")
+#' @return A list of image options
+#' @export
+image_options <- function(size = NULL, quality = NULL, style = NULL) {
+  opts <- list()
+  if (!is.null(size)) opts$size <- size
+  if (!is.null(quality)) opts$quality <- quality
+  if (!is.null(style)) opts$style <- style
+  opts
+}
+
+#' Parse assistant image data from JSON response
+#'
+#' @param data A list containing image data fields
+#' @return A list with format, base64, url, revisedPrompt, width, height
+#' @export
+parse_assistant_image_data <- function(data) {
+  list(
+    format = data$format,
+    base64 = data$base64,
+    url = data$url,
+    revisedPrompt = data$revisedPrompt,
+    width = data$width,
+    height = data$height
+  )
+}
+
+#' Parse a content block from a mixed text+image response
+#'
+#' @param block A list with type and content fields
+#' @return A parsed content block list
+#' @export
+parse_content_block <- function(block) {
+  if (block$type == "image" && !is.null(block$image)) {
+    block$image <- parse_assistant_image_data(block$image)
+  }
+  block
+}
 
 
 # ---------------------------------------------------------------------------

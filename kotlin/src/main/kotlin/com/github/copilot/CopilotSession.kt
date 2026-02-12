@@ -79,6 +79,8 @@ class CopilotSession internal constructor(
                 put("attachments", json.encodeToJsonElement(it))
             }
             options.mode?.let { put("mode", it) }
+            options.responseFormat?.let { put("responseFormat", json.encodeToJsonElement(it)) }
+            options.imageOptions?.let { put("imageOptions", json.encodeToJsonElement(it)) }
         }
         val response = client.request("session.send", params)
         return response.jsonObject["messageId"]!!.jsonPrimitive.content
