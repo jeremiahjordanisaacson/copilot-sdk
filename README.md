@@ -43,6 +43,7 @@ The GitHub Copilot SDK exposes the same engine behind Copilot CLI: a production-
 | **Shell / Bash** | [`shell/`](./shell/README.md) | Bash 4+ | N/A (source) |
 | **Elixir** | [`elixir/`](./elixir/README.md) | Elixir 1.15+ | Mix |
 | **Haskell** | [`haskell/`](./haskell/README.md) | GHC 9.4+ | Cabal |
+| **Clojure** | [`clojure/`](./clojure/README.md) | Clojure 1.12+ | deps.edn |
 
 See the individual SDK READMEs for installation, usage examples, and API reference. For details on the multi-language expansion, see [`MULTI_LANGUAGE_SDKS.md`](./MULTI_LANGUAGE_SDKS.md).
 
@@ -135,13 +136,6 @@ Please use the [GitHub Issues](https://github.com/github/copilot-sdk/issues) pag
 - **[Cookbook](https://github.com/github/awesome-copilot/blob/main/cookbook/copilot-sdk)** – Practical recipes for common tasks across all languages
 - **[More Resources](https://github.com/github/awesome-copilot/blob/main/collections/copilot-sdk.md)** – Additional examples, tutorials, and community resources
 
-## Other Community-maintained SDKs
-
-| SDK           | Location                                           |
-| --------------| -------------------------------------------------- |
-| **Clojure**   | [krukow/copilot-sdk-clojure][sdk-clojure]          |
-
-[sdk-clojure]: https://github.com/krukow/copilot-sdk-clojure
 
 ## Contributing
 
