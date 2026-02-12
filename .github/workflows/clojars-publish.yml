@@ -32,7 +32,7 @@ jobs:
       - name: Build and deploy to Clojars
         run: |
           VERSION=${GITHUB_REF_NAME#v}
-          VERSION=$VERSION clj -T:build deploy
+          VERSION=$VERSION clojure -T:build deploy
         env:
           CLOJARS_USERNAME: ${{ secrets.CLOJARS_USERNAME }}
           CLOJARS_PASSWORD: ${{ secrets.CLOJARS_PASSWORD }}
