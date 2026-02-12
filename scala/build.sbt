@@ -3,7 +3,7 @@ val scala3Version = "3.4.2"
 lazy val root = project
   .in(file("."))
   .settings(
-    name := "copilot-sdk",
+    name := "copilot-sdk-supercharged",
     version := "0.1.0",
     scalaVersion := scala3Version,
     organization := "com.github.copilot",

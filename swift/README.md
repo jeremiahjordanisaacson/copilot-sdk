@@ -1,4 +1,4 @@
-# Copilot SDK for Swift
+# Copilot Supercharged SDK for Swift
 
 A Swift SDK for interacting with the GitHub Copilot CLI via JSON-RPC 2.0 over stdio.
 
@@ -15,7 +15,7 @@ A Swift SDK for interacting with the GitHub Copilot CLI via JSON-RPC 2.0 over st
 Add the following to your `Package.swift` dependencies:
 
 ```swift
-.package(url: "https://github.com/github/copilot-sdk", from: "1.0.0")
+.package(url: "https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged", from: "1.0.0")
 ```
 
 Then add `"CopilotSDK"` as a dependency of your target:

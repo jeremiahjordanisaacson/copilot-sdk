@@ -1,4 +1,4 @@
-# Copilot R SDK
+# Copilot Supercharged R SDK
 
 R SDK for programmatic control of GitHub Copilot CLI via JSON-RPC 2.0 over stdio.
 
@@ -13,19 +13,19 @@ Install from source (requires R 4.1+):
 install.packages(c("jsonlite", "R6", "processx", "uuid"))
 
 # Install from local source
-install.packages("path/to/copilot-sdk/r", repos = NULL, type = "source")
+install.packages("path/to/copilot-sdk-supercharged/r", repos = NULL, type = "source")
 ```
 
 Or using `devtools`:
 
 ```r
-devtools::install_local("path/to/copilot-sdk/r")
+devtools::install_local("path/to/copilot-sdk-supercharged/r")
 ```
 
 ## Quick Start
 
 ```r
-library(copilot.sdk)
+library(copilot.sdk.supercharged)
 
 # Create and start client
 client <- CopilotClient$new()
@@ -177,7 +177,7 @@ Events are `SessionEvent` R6 objects with these key types:
 Define custom tools using `define_tool()`:
 
 ```r
-library(copilot.sdk)
+library(copilot.sdk.supercharged)
 
 my_tool <- define_tool(
   name = "lookup_issue",

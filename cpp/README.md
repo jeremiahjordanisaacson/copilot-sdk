@@ -1,4 +1,4 @@
-# Copilot SDK for C++
+# Copilot Supercharged SDK for C++
 
 C++ SDK for the GitHub Copilot CLI. Communicates with the Copilot CLI server via JSON-RPC 2.0 over stdio pipes using Content-Length header framing.
 

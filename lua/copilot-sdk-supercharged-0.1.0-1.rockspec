@@ -1,20 +1,20 @@
-package = "copilot-sdk"
+package = "copilot-sdk-supercharged"
 version = "0.1.0-1"
 
 source = {
-    url = "https://github.com/github/copilot-sdk",
+    url = "https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged",
     tag = "lua-v0.1.0",
 }
 
 description = {
-    summary = "Lua SDK for the GitHub Copilot CLI",
+    summary = "Lua Supercharged SDK for the GitHub Copilot CLI",
     detailed = [[
         A Lua SDK for interacting with the GitHub Copilot CLI server.
         Communicates via JSON-RPC 2.0 over stdio using Content-Length header framing.
         Supports session management, custom tools, permission handling, user input,
         and hook invocations.
     ]],
-    homepage = "https://github.com/github/copilot-sdk",
+    homepage = "https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged",
     license = "MIT",
 }
 

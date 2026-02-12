@@ -1,4 +1,4 @@
-# GitHub Copilot SDK for Kotlin
+# GitHub Copilot Supercharged SDK for Kotlin
 
 The Kotlin SDK for the GitHub Copilot CLI provides a coroutine-based interface for communicating with the Copilot CLI server via JSON-RPC 2.0 over stdio or TCP.
 
@@ -15,7 +15,7 @@ The Kotlin SDK for the GitHub Copilot CLI provides a coroutine-based interface f
 
 ```kotlin
 dependencies {
-    implementation("com.github.copilot:copilot-sdk-kotlin:0.1.0")
+    implementation("com.github.copilot:copilot-sdk-supercharged-kotlin:0.1.0")
 }
 ```
 

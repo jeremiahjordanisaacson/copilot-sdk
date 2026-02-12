@@ -1,4 +1,4 @@
-# GitHub Copilot SDK for C
+# GitHub Copilot Supercharged SDK for C
 
 A C11 SDK for interacting with the GitHub Copilot CLI server via JSON-RPC 2.0 over stdio. This SDK follows the same architecture and patterns as the official Node.js, Python, Go, and .NET SDKs.
 

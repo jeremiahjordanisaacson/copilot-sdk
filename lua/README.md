@@ -1,4 +1,4 @@
-# Copilot SDK for Lua
+# Copilot Supercharged SDK for Lua
 
 A Lua SDK for interacting with the GitHub Copilot CLI server. Communicates via JSON-RPC 2.0 over stdio using Content-Length header framing.
 
@@ -13,7 +13,7 @@ A Lua SDK for interacting with the GitHub Copilot CLI server. Communicates via J
 ### Via LuaRocks
 
 ```bash
-luarocks install copilot-sdk
+luarocks install copilot-sdk-supercharged
 ```
 
 ### Manual

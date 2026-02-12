@@ -4,14 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.copilot</groupId>
-    <artifactId>copilot-sdk</artifactId>
+    <groupId>com.github.copilot.supercharged</groupId>
+    <artifactId>copilot-sdk-supercharged</artifactId>
     <version>0.1.0</version>
     <packaging>jar</packaging>
 
-    <name>GitHub Copilot SDK</name>
-    <description>Java SDK for the GitHub Copilot CLI</description>
-    <url>https://github.com/github/copilot-sdk</url>
+    <name>GitHub Copilot Supercharged SDK</name>
+    <description>Java SDK for the GitHub Copilot CLI (Supercharged)</description>
+    <url>https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged</url>
 
     <licenses>
         <license>

@@ -5,7 +5,7 @@ defmodule Copilot.MixProject do
 
   def project do
     [
-      app: :copilot_sdk,
+      app: :copilot_sdk_supercharged,
       version: @version,
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
@@ -34,7 +34,7 @@ defmodule Copilot.MixProject do
     [
       licenses: ["MIT"],
       links: %{
-        "GitHub" => "https://github.com/github/copilot-sdk"
+        "GitHub" => "https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged"
       }
     ]
   end

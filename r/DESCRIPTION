@@ -1,4 +1,4 @@
-Package: copilot.sdk
+Package: copilot.sdk.supercharged
 Title: R SDK for GitHub Copilot CLI
 Version: 0.1.0
 Authors@R: c(
@@ -9,8 +9,8 @@ Description: R SDK for programmatic control of GitHub Copilot CLI via JSON-RPC 2
     over stdio. Provides session management, tool registration, event handling,
     and streaming support for building applications on top of GitHub Copilot.
 License: MIT + file LICENSE
-URL: https://github.com/github/copilot-sdk
-BugReports: https://github.com/github/copilot-sdk/issues
+URL: https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged
+BugReports: https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1

@@ -1,6 +1,6 @@
-# Copilot SDK for Elixir
+# Copilot Supercharged SDK for Elixir
 
-Elixir SDK for the [GitHub Copilot CLI](https://github.com/github/copilot-sdk). Communicates with the Copilot CLI server via JSON-RPC 2.0 over stdio.
+Elixir SDK for the [GitHub Copilot CLI](https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged). Communicates with the Copilot CLI server via JSON-RPC 2.0 over stdio.
 
 ## Requirements
 
@@ -15,7 +15,7 @@ Add to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:copilot_sdk, path: "../elixir"}  # or from Hex when published
+    {:copilot_sdk_supercharged, path: "../elixir"}  # or from Hex when published
   ]
 end
 ```

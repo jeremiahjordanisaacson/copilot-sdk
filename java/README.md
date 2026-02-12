@@ -1,4 +1,4 @@
-# GitHub Copilot SDK for Java
+# GitHub Copilot Supercharged SDK for Java
 
 Java SDK for the GitHub Copilot CLI, enabling programmatic interaction with the Copilot agent runtime.
 
@@ -13,8 +13,8 @@ Java SDK for the GitHub Copilot CLI, enabling programmatic interaction with the 
 
 ```xml
 <dependency>
-    <groupId>com.github.copilot</groupId>
-    <artifactId>copilot-sdk</artifactId>
+    <groupId>com.github.copilot.supercharged</groupId>
+    <artifactId>copilot-sdk-supercharged</artifactId>
     <version>0.1.0</version>
 </dependency>
 ```
@@ -22,7 +22,7 @@ Java SDK for the GitHub Copilot CLI, enabling programmatic interaction with the 
 ### Gradle
 
 ```groovy
-implementation 'com.github.copilot:copilot-sdk:0.1.0'
+implementation 'com.github.copilot.supercharged:copilot-sdk-supercharged:0.1.0'
 ```
 
 ## Quick Start

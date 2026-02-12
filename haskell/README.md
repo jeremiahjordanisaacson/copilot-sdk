@@ -1,4 +1,4 @@
-# Copilot Haskell SDK
+# Copilot Supercharged Haskell SDK
 
 A Haskell SDK for interacting with the GitHub Copilot CLI server via JSON-RPC 2.0 over stdio.
 
@@ -36,7 +36,7 @@ The SDK follows the same patterns as the official Node.js, Python, Go, and .NET 
 Add to your `cabal.project` or use as a local dependency:
 
 ```cabal
-build-depends: copilot-sdk
+build-depends: copilot-sdk-supercharged
 ```
 
 ### Dependencies

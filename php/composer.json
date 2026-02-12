@@ -1,5 +1,5 @@
 {
-    "name": "github/copilot-sdk",
+    "name": "github/copilot-sdk-supercharged",
     "description": "PHP SDK for the GitHub Copilot CLI - communicate with Copilot via JSON-RPC 2.0 over stdio or TCP",
     "type": "library",
     "license": "MIT",

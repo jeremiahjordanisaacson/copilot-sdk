@@ -1,4 +1,4 @@
-# Copilot Ruby SDK
+# Copilot Supercharged Ruby SDK
 
 Ruby SDK for the [GitHub Copilot CLI](https://github.com/github/copilot). Communicates with the Copilot CLI server via JSON-RPC 2.0 over stdio or TCP.
 
@@ -12,13 +12,13 @@ Ruby SDK for the [GitHub Copilot CLI](https://github.com/github/copilot). Commun
 Add to your Gemfile:
 
 ```ruby
-gem "copilot-sdk"
+gem "copilot-sdk-supercharged"
 ```
 
 Or install directly:
 
 ```bash
-gem install copilot-sdk
+gem install copilot-sdk-supercharged
 ```
 
 ## Quick Start

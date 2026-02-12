@@ -46,7 +46,7 @@ publishing {
             pom {
                 name.set("GitHub Copilot SDK for Kotlin")
                 description.set("Kotlin SDK for the GitHub Copilot CLI, communicating via JSON-RPC 2.0 over stdio or TCP.")
-                url.set("https://github.com/github/copilot-sdk")
+                url.set("https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged")
                 licenses {
                     license {
                         name.set("MIT License")

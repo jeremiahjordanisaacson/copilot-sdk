@@ -1,4 +1,4 @@
-# Copilot SDK for Scala
+# Copilot Supercharged SDK for Scala
 
 Scala 3 SDK for the [GitHub Copilot CLI](https://github.com/github/copilot). Communicates with the Copilot CLI server via JSON-RPC 2.0 over stdio or TCP.
 
@@ -14,7 +14,7 @@ Add the SDK to your `build.sbt`:
 
 ```scala
 // Until published to Maven Central, use a local dependency or publishLocal
-lazy val copilotSdk = ProjectRef(file("path/to/copilot-sdk/scala"), "root")
+lazy val copilotSdk = ProjectRef(file("path/to/copilot-sdk-supercharged/scala"), "root")
 
 lazy val myProject = project
   .dependsOn(copilotSdk)
@@ -23,12 +23,12 @@ lazy val myProject = project
 Or publish locally and add as a library dependency:
 
 ```bash
-cd copilot-sdk/scala
+cd copilot-sdk-supercharged/scala
 sbt publishLocal
 ```
 
 ```scala
-libraryDependencies += "com.github.copilot" %% "copilot-sdk" % "0.1.0"
+libraryDependencies += "com.github.copilot" %% "copilot-sdk-supercharged" % "0.1.0"
 ```
 
 ## Quick Start
@@ -268,7 +268,7 @@ The SDK verifies protocol version compatibility on connect. The current version 
 ## Running the Example
 
 ```bash
-cd copilot-sdk/scala
+cd copilot-sdk-supercharged/scala
 sbt "runMain BasicExample"
 ```
 

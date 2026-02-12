@@ -3,7 +3,7 @@
 ##--------------------------------------------------------------------------------------------
 
 cmake_minimum_required(VERSION 3.14)
-project(copilot-sdk-c
+project(copilot-sdk-supercharged-c
     VERSION 0.1.0
     DESCRIPTION "GitHub Copilot SDK for C"
     LANGUAGES C

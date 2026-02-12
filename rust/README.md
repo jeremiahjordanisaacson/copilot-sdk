@@ -1,4 +1,4 @@
-# Copilot SDK for Rust
+# Copilot Supercharged SDK for Rust
 
 A Rust client library for programmatic control of GitHub Copilot CLI via JSON-RPC 2.0.
 
@@ -10,7 +10,7 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-copilot-sdk = { path = "../rust" }
+copilot-sdk-supercharged = { path = "../rust" }
 tokio = { version = "1", features = ["full"] }
 serde_json = "1"
 ```
@@ -19,7 +19,7 @@ Or if published to crates.io:
 
 ```toml
 [dependencies]
-copilot-sdk = "0.1"
+copilot-sdk-supercharged = "0.1"
 tokio = { version = "1", features = ["full"] }
 ```
 

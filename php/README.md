@@ -1,4 +1,4 @@
-# GitHub Copilot PHP SDK
+# GitHub Copilot Supercharged PHP SDK
 
 PHP SDK for the GitHub Copilot CLI. Communicates with the Copilot CLI server via JSON-RPC 2.0 over stdio or TCP.
 
@@ -11,7 +11,7 @@ PHP SDK for the GitHub Copilot CLI. Communicates with the Copilot CLI server via
 ## Installation
 
 ```bash
-composer require github/copilot-sdk
+composer require github/copilot-sdk-supercharged
 ```
 
 Or add to your `composer.json`:
@@ -19,7 +19,7 @@ Or add to your `composer.json`:
 ```json
 {
     "require": {
-        "github/copilot-sdk": "*"
+        "github/copilot-sdk-supercharged": "*"
     }
 }
 ```

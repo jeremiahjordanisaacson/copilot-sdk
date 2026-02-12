@@ -1,4 +1,4 @@
-# GitHub Copilot Perl SDK
+# GitHub Copilot Supercharged Perl SDK
 
 Perl SDK for the GitHub Copilot CLI. Communicates with the Copilot CLI server
 via JSON-RPC 2.0 over stdio, following the same patterns as the official

@@ -1,4 +1,4 @@
-# Copilot CLI SDK for Shell/Bash
+# Copilot Supercharged CLI SDK for Shell/Bash
 
 A Bash library for communicating with the GitHub Copilot CLI server via JSON-RPC 2.0 over stdio. This SDK follows the same patterns as the existing Node.js, Python, Go, and .NET SDKs.
 
@@ -28,7 +28,7 @@ copilot --version
 set -euo pipefail
 
 # Source the SDK
-source /path/to/copilot-sdk/shell/lib/copilot_sdk.sh
+source /path/to/copilot-sdk-supercharged/shell/lib/copilot_sdk.sh
 
 # Start the client (spawns copilot CLI process)
 copilot_client_start

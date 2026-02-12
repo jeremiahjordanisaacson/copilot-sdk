@@ -52,7 +52,7 @@ import           System.Process            (CreateProcess (..), StdStream (..), 
                                             waitForProcess)
 
 import           Copilot.JsonRpc           (JsonRpcClient, JsonRpcError (..),
-                                            newJsonRpcClient, startClient, stopClient,
+                                            newJsonRpcClient,
                                             sendRequest, setRequestHandler)
 import qualified Copilot.JsonRpc           as JR
 import           Copilot.SdkProtocolVersion (sdkProtocolVersion)

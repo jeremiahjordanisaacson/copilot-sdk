@@ -30,11 +30,11 @@ WriteMakefile(
         resources   => {
             repository => {
                 type => 'git',
-                url  => 'https://github.com/github/copilot-sdk.git',
-                web  => 'https://github.com/github/copilot-sdk',
+                url  => 'https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged.git',
+                web  => 'https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged',
             },
             bugtracker => {
-                web => 'https://github.com/github/copilot-sdk/issues',
+                web => 'https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged/issues',
             },
         },
     },

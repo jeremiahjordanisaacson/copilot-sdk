@@ -1,8 +1,8 @@
-# Copilot SDK for Dart
+# Copilot Supercharged SDK for Dart
 
 Dart SDK for programmatic control of GitHub Copilot CLI via JSON-RPC 2.0.
 
-This SDK follows the same architecture and protocol as the official Node.js, Python, Go, and .NET SDKs in the [copilot-sdk](https://github.com/github/copilot-sdk) repository.
+This SDK follows the same architecture and protocol as the official Node.js, Python, Go, and .NET SDKs in the [copilot-sdk-supercharged](https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged) repository.
 
 ## Features
 
@@ -29,7 +29,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  copilot_sdk:
+  copilot_sdk_supercharged:
     path: ../dart  # or publish to pub.dev
 ```
 

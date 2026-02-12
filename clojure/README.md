@@ -1,4 +1,4 @@
-# Copilot SDK for Clojure
+# Copilot Supercharged SDK for Clojure
 
 Clojure SDK for programmatic control of GitHub Copilot CLI via JSON-RPC 2.0.
 
@@ -11,7 +11,7 @@ Clojure SDK for programmatic control of GitHub Copilot CLI via JSON-RPC 2.0.
 Add the SDK source path to your project or include it as a local dependency:
 
 ```clojure
-{:deps {copilot-sdk/clojure {:local/root "../copilot-sdk/clojure"}}}
+{:deps {copilot-sdk-supercharged/clojure {:local/root "../copilot-sdk-supercharged/clojure"}}}
 ```
 
 ### Dependencies

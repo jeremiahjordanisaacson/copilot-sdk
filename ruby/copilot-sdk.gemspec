@@ -3,7 +3,7 @@
 require_relative "lib/copilot/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "copilot-sdk"
+  spec.name          = "copilot-sdk-supercharged"
   spec.version       = Copilot::VERSION
   spec.authors       = ["Microsoft Corporation"]
   spec.email         = ["copilot@github.com"]
@@ -14,14 +14,14 @@ Gem::Specification.new do |spec|
     Provides session management, tool registration, permission handling, hooks,
     and event subscriptions over stdio or TCP transport.
   DESC
-  spec.homepage      = "https://github.com/github/copilot-sdk"
+  spec.homepage      = "https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged"
   spec.license       = "MIT"
 
   spec.required_ruby_version = ">= 3.1"
 
   spec.metadata["homepage_uri"]    = spec.homepage
-  spec.metadata["source_code_uri"] = "https://github.com/github/copilot-sdk/tree/main/ruby"
-  spec.metadata["changelog_uri"]   = "https://github.com/github/copilot-sdk/blob/main/ruby/CHANGELOG.md"
+  spec.metadata["source_code_uri"] = "https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged/tree/main/ruby"
+  spec.metadata["changelog_uri"]   = "https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged/blob/main/ruby/CHANGELOG.md"
 
   spec.files = Dir[
     "lib/**/*.rb",

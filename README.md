@@ -1,4 +1,4 @@
-# GitHub Copilot CLI SDKs
+# GitHub Copilot SDK - Supercharged
 
 ![GitHub Copilot SDK SUPERCHARGED](./assets/SUPERCHARGED!!!.gif)
 
@@ -127,7 +127,7 @@ The GitHub Copilot SDK is currently in Technical Preview. While it is functional
 
 ### How do I report issues or request features?
 
-Please use the [GitHub Issues](https://github.com/github/copilot-sdk/issues) page to report bugs or request new features. We welcome your feedback to help improve the SDK.
+Please use the [GitHub Issues](https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged/issues) page to report bugs or request new features. We welcome your feedback to help improve the SDK.
 
 ## Quick Links
 
