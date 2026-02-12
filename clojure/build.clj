@@ -2,7 +2,7 @@
   (:require [clojure.tools.build.api :as b]
             [deps-deploy.deps-deploy :as dd]))
 
-(def lib 'io.github.jeremiahjordanisaacson/copilot-sdk-supercharged)
+(def lib 'net.clojars.jeremiahisaacson/copilot-sdk-supercharged)
 (def version (or (System/getenv "VERSION") "1.0.0"))
 (def class-dir "target/classes")
 (def basis (delay (b/create-basis {:project "deps.edn"})))
