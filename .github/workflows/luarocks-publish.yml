@@ -1,0 +1,38 @@
+name: Publish to LuaRocks
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lua
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Lua
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: '5.4'
+
+      - name: Setup LuaRocks
+        uses: leafo/gh-actions-luarocks@v4
+
+      - name: Set version and publish
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          ROCKSPEC="copilot-sdk-supercharged-${VERSION}-1.rockspec"
+          cp copilot-sdk-supercharged-0.1.0-1.rockspec "$ROCKSPEC"
+          sed -i "s/version = .*/version = \"${VERSION}-1\"/" "$ROCKSPEC"
+          sed -i "s/tag = .*/tag = \"v${VERSION}\"/" "$ROCKSPEC"
+          luarocks upload "$ROCKSPEC" --api-key="$LUAROCKS_API_KEY"
+        env:
+          LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}

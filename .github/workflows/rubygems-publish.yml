@@ -1,0 +1,42 @@
+name: Publish to RubyGems
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ruby
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+
+      - name: Set version from tag
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          sed -i "s/spec.version.*/spec.version = \"$VERSION\"/" copilot-sdk.gemspec
+
+      - name: Build gem
+        run: gem build copilot-sdk.gemspec
+
+      - name: Publish to RubyGems
+        run: |
+          mkdir -p ~/.gem
+          echo "---" > ~/.gem/credentials
+          echo ":rubygems_api_key: $RUBYGEMS_API_KEY" >> ~/.gem/credentials
+          chmod 0600 ~/.gem/credentials
+          gem push copilot-sdk-supercharged-*.gem
+        env:
+          RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
