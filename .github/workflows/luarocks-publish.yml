@@ -26,16 +26,42 @@ jobs:
       - name: Setup LuaRocks
         uses: leafo/gh-actions-luarocks@v4
 
-      - name: Install JSON library
+      - name: Install dependencies
         run: luarocks install dkjson
 
       - name: Set version and publish
         run: |
           VERSION=${GITHUB_REF_NAME#v}
           ROCKSPEC="copilot-sdk-supercharged-${VERSION}-1.rockspec"
-          cp copilot-sdk-supercharged-0.1.0-1.rockspec "$ROCKSPEC"
-          sed -i "s/version = .*/version = \"${VERSION}-1\"/" "$ROCKSPEC"
-          sed -i "s/tag = .*/tag = \"v${VERSION}\"/" "$ROCKSPEC"
+          cat > "$ROCKSPEC" <<SPEC
+          package = "copilot-sdk-supercharged"
+          version = "${VERSION}-1"
+          source = {
+              url = "git+https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged.git",
+              tag = "v${VERSION}",
+              dir = "copilot-sdk-supercharged/lua",
+          }
+          description = {
+              summary = "Lua Supercharged SDK for the GitHub Copilot CLI",
+              homepage = "https://github.com/jeremiahjordanisaacson/copilot-sdk-supercharged",
+              license = "MIT",
+          }
+          dependencies = {
+              "lua >= 5.1",
+              "lua-cjson >= 2.1.0",
+          }
+          build = {
+              type = "builtin",
+              modules = {
+                  ["copilot.sdk_protocol_version"] = "copilot/sdk_protocol_version.lua",
+                  ["copilot.types"]                = "copilot/types.lua",
+                  ["copilot.json_rpc_client"]      = "copilot/json_rpc_client.lua",
+                  ["copilot.client"]               = "copilot/client.lua",
+                  ["copilot.session"]              = "copilot/session.lua",
+                  ["copilot.define_tool"]          = "copilot/define_tool.lua",
+              },
+          }
+          SPEC
           luarocks upload "$ROCKSPEC" --api-key="$LUAROCKS_API_KEY"
         env:
           LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
