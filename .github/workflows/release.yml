@@ -142,6 +142,31 @@ jobs:
           # Replace the ${VERSION} placeholder
           sed -i "s/\${VERSION}/${VERSION}/g" release_notes.md
 
+      - name: Generate changelog
+        id: changelog
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          REPO="jeremiahjordanisaacson/copilot-sdk-supercharged"
+
+          # Get previous tag
+          PREV_TAG=$(git tag --sort=-version:refname | grep -v "v${VERSION}" | head -1)
+
+          echo "" >> release_notes.md
+          echo "---" >> release_notes.md
+          echo "" >> release_notes.md
+          echo "## What's Changed" >> release_notes.md
+          echo "" >> release_notes.md
+
+          if [ -n "$PREV_TAG" ]; then
+            # List commits between tags
+            git log "${PREV_TAG}..v${VERSION}" --pretty=format:"* %s by @%an in [\`%h\`](https://github.com/${REPO}/commit/%H)" --no-merges >> release_notes.md
+            echo "" >> release_notes.md
+            echo "" >> release_notes.md
+            echo "**Full Changelog**: https://github.com/${REPO}/compare/${PREV_TAG}...v${VERSION}" >> release_notes.md
+          else
+            echo "Initial release." >> release_notes.md
+          fi
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
