@@ -1,6 +1,6 @@
 # GitHub Copilot CLI SDKs
 
-![GitHub Copilot SDK](./assets/RepoHeader_01.png)
+![GitHub Copilot SDK SUPERCHARGED](./assets/SUPERCHARGED!!!.gif)
 
 [![NPM Downloads](https://img.shields.io/npm/dm/%40github%2Fcopilot-sdk?label=npm)](https://www.npmjs.com/package/@github/copilot-sdk)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/github-copilot-sdk?label=PyPI)](https://pypi.org/project/github-copilot-sdk/)
